@@ -1,19 +1,55 @@
-import { Canvas } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
-import AvatarManager from "@/class/AvatarManager";
-import { OrbitControls } from "@react-three/drei";
-import FaceLandmarkManager from "@/class/FaceLandmarkManager";
-import { Float, Text3D } from "@react-three/drei";
+/** @description 主要用於渲染 R3F 的 Canvas，顯示 3D 模型（帽子）與 FaceDepth 遮罩等。是視覺渲染的主場景。 */
 
+import { Canvas, useThree } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
+import AvatarManager from "@/classes/AvatarManager";
+import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
+import { OrbitControls } from "@react-three/drei";
+import FaceMeshMask from "@/components/FaceMeshMask";
+import * as THREE from "three";
 interface AvatarCanvasProps {
   width: number;
   height: number;
   url: string;
+  onCanvasReady?: (el: HTMLCanvasElement) => void;
+  // mirrored: boolean;
+  // videoRef: React.RefObject<HTMLVideoElement>;
 }
 
-const AvatarCanvas = ({ width, height, url }: AvatarCanvasProps) => {
+function CanvasProbe({
+  onReady,
+}: {
+  onReady?: (el: HTMLCanvasElement) => void;
+}) {
+  const { gl } = useThree();
+  useEffect(() => {
+    onReady?.(gl.domElement as HTMLCanvasElement);
+  }, [gl, onReady]);
+  return null;
+}
+
+// const VideoPlane = ({ video }: { video: HTMLVideoElement }) => {
+//   const texture = new THREE.VideoTexture(video);
+//   texture.minFilter = THREE.LinearFilter;
+//   texture.magFilter = THREE.LinearFilter;
+//   texture.format = THREE.RGBAFormat;
+
+//   return (
+//     <mesh position={[0, 0, -0.1]} renderOrder={-1}>
+//       <planeGeometry args={[2, 2]} />
+//       <meshBasicMaterial map={texture} toneMapped={false} />
+//     </mesh>
+//   );
+// };
+
+const AvatarCanvas = ({
+  width,
+  height,
+  url,
+  onCanvasReady,
+}: AvatarCanvasProps) => {
   const [scene, setScene] = useState<THREE.Scene | null>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [_, setIsLoading] = useState(true);
   const avatarManagerRef = useRef<AvatarManager>(AvatarManager.getInstance());
   const requestRef = useRef(0);
 
@@ -32,7 +68,7 @@ const AvatarCanvas = ({ width, height, url }: AvatarCanvasProps) => {
     setIsLoading(true);
     const avatarManager = AvatarManager.getInstance();
     avatarManager
-      .loadModel(url)
+      .loadModel(url, "/foods-roulette.png")
       .then(() => {
         setScene(avatarManager.getScene());
         setIsLoading(false);
@@ -42,9 +78,19 @@ const AvatarCanvas = ({ width, height, url }: AvatarCanvasProps) => {
       });
   }, [url]);
 
+  if (!width || !height || !url) return null;
+
   return (
     <div className="absolute" style={{ width: width, height: height }}>
-      <Canvas camera={{ fov: 30, position: [0, 0.5, 1] }}>
+      <Canvas
+        camera={{ fov: 30, position: [0, 0.5, 1] }}
+        gl={{ preserveDrawingBuffer: true }}
+        onCreated={({ gl }) => {
+          gl.toneMapping = THREE.NoToneMapping;
+          gl.outputColorSpace = THREE.LinearSRGBColorSpace;
+        }}
+      >
+        <CanvasProbe onReady={onCanvasReady} />
         <ambientLight />
         <directionalLight />
         <OrbitControls
@@ -54,11 +100,14 @@ const AvatarCanvas = ({ width, height, url }: AvatarCanvasProps) => {
           enableZoom={false}
           enablePan={false}
         />
+        {/* {videoRef.current && <VideoPlane video={videoRef.current} mirrored={mirrored} />} */}
+        <FaceMeshMask />
         {scene && <primitive object={scene} />}
-        {isLoading && (
+        {/* {isLoading && (
           <Float floatIntensity={1} speed={1}>
             <Text3D
-              font={"../assets/fonts/Open_Sans_Condensed_Bold.json"}
+              // font={"../assets/fonts/Open_Sans_Condensed_Bold.json"}
+              font=""
               scale={0.05}
               position={[-0.1, 0.6, 0]}
               bevelEnabled
@@ -68,7 +117,7 @@ const AvatarCanvas = ({ width, height, url }: AvatarCanvasProps) => {
               <meshNormalMaterial />
             </Text3D>
           </Float>
-        )}
+        )} */}
       </Canvas>
     </div>
   );

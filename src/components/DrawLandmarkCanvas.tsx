@@ -1,4 +1,6 @@
-import FaceLandmarkManager from "@/class/FaceLandmarkManager";
+/** @description 應是用來可視化 debug 臉部關鍵點的 2D canvas 層（非 R3F）。切換到 LandmarkView 時使用。 */
+
+import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
 import { useEffect, useRef } from "react";
 
 interface DrawLandmarkCanvasProps {
