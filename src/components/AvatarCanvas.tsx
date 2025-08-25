@@ -4,7 +4,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import AvatarManager from "@/classes/AvatarManager";
 import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Float, Text3D } from "@react-three/drei";
 import FaceMeshMask from "@/components/FaceMeshMask";
 import * as THREE from "three";
 interface AvatarCanvasProps {
@@ -49,7 +49,7 @@ const AvatarCanvas = ({
   onCanvasReady,
 }: AvatarCanvasProps) => {
   const [scene, setScene] = useState<THREE.Scene | null>();
-  const [_, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const avatarManagerRef = useRef<AvatarManager>(AvatarManager.getInstance());
   const requestRef = useRef(0);
 
@@ -103,11 +103,10 @@ const AvatarCanvas = ({
         {/* {videoRef.current && <VideoPlane video={videoRef.current} mirrored={mirrored} />} */}
         <FaceMeshMask />
         {scene && <primitive object={scene} />}
-        {/* {isLoading && (
+        {isLoading && (
           <Float floatIntensity={1} speed={1}>
             <Text3D
-              // font={"../assets/fonts/Open_Sans_Condensed_Bold.json"}
-              font=""
+              font={"/Open_Sans_Condensed_Bold.json"}
               scale={0.05}
               position={[-0.1, 0.6, 0]}
               bevelEnabled
@@ -117,7 +116,7 @@ const AvatarCanvas = ({
               <meshNormalMaterial />
             </Text3D>
           </Float>
-        )} */}
+        )}
       </Canvas>
     </div>
   );

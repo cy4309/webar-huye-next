@@ -25,7 +25,6 @@ app.prepare().then(() => {
       handle(req, res, parsedUrl);
     })
     .listen(port, "0.0.0.0", () => {
-      // console.log("✅ HTTPS server running at https://0.0.0.0:3000");
       const interfaces = os.networkInterfaces();
       const addresses = [];
 
@@ -41,16 +40,14 @@ app.prepare().then(() => {
       const firstIP = addresses[0]; // ✅ 第一個區網 IP
       console.log(`✅ HTTPS server running at:`);
       console.log(`→ https://localhost:${port}`);
-
       addresses.forEach((ip) => {
         console.log(`→ https://${ip}:${port}`);
       });
 
-      // ✅ 自動開啟區網 IP（用來手機測試）
       if (firstIP) {
         openurl.open(`https://${firstIP}:${port}`);
       } else {
-        openurl.open(localUrl); // fallback 到 localhost
+        openurl.open(localUrl);
       }
     });
 });

@@ -13,15 +13,21 @@ const FaceLandmarkCanvas = dynamic(
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center px-2 pt-10 min-h-screen text-white">
+    <div className="w-full h-[100dvh] flex flex-col items-center text-white">
       <Head>
         {/* <title>Mediapie FaceLandmarker Demo</title> */}
-        <meta name="description" content="A demo application showcasing Mediapie FaceLandmarker's real-time facial landmark and blendshape score estimation." />
-        <meta name="keywords" content="Mediapie, FaceLandmarker, AR Filter, ReadyPlayerMe, Facial landmarks, tensorflow-js" />
+        <meta
+          name="description"
+          content="A demo application showcasing Mediapie FaceLandmarker's real-time facial landmark and blendshape score estimation."
+        />
+        <meta
+          name="keywords"
+          content="Mediapie, FaceLandmarker, AR Filter, ReadyPlayerMe, Facial landmarks, tensorflow-js"
+        />
       </Head>
       {/* <h1 className="text-xl md:text-4xl font-bold mb-2 text-shadow text-center">Mediapie FaceLandmarker Demo</h1> */}
       {/* <p className="mt-4 mb-4 text-center px-4 md:text-lg text-sm">Detect the most prominent face from an input image, then estimate 478 3D facial landmarks and 52 facial blendshape scores in real-time.</p> */}
-      <div className="flex justify-center w-full">
+      <div className="w-full h-full flex justify-center">
         <FaceLandmarkCanvas />
       </div>
     </div>

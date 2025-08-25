@@ -7,12 +7,9 @@ import { useEffect, useRef, useState } from "react";
 import AvatarCanvas from "@/components/AvatarCanvas";
 import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
 import ReadyPlayerCreator from "@/components/ReadyPlayerCreator";
-import BaseButton from "@/components/BaseButton";
-import { IoMdCamera } from "react-icons/io";
-import { AiFillVideoCamera } from "react-icons/ai";
-import { LuRefreshCw } from "react-icons/lu";
 import AvatarManager from "@/classes/AvatarManager";
 import SceneEnvironmentCanvas from "@/components/SceneEnvironmentCanvas";
+import Nav from "@/components/Nav";
 
 function pickMime(): string {
   const cand = [
@@ -448,7 +445,7 @@ const FaceLandmarkCanvas = () => {
     <div className="w-full h-full flex flex-col items-center">
       {cameraMode === "user" ? (
         <>
-          <div className="w-full h-full flex justify-center items-center relative">
+          <div className="w-full h-full flex justify-center items-center">
             <video
               className={`w-full h-full object-cover ${
                 mirrored ? "scale-x-[-1]" : ""
@@ -513,86 +510,18 @@ const FaceLandmarkCanvas = () => {
           </div>
 
           {/* iOS 相機風底部工具列 */}
-          <div className="flex justify-center gap-10 absolute bottom-0">
-            <div className="absolute bottom-0 left-0 right-0 pb-8 pt-4 flex items-end justify-center">
-              <div className="flex justify-center items-center gap-8 px-6 py-3 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
-                {/* 模式切換 */}
-                {/* <BaseButton onClick={toggleAvatarView} className="!rounded-full">
-              <span className="text-white/90 text-sm tracking-wide">
-                {avatarView ? "Avatar" : "Landmark"}
-              </span>
-            </BaseButton> */}
-
-                {/* 拍照（合成輸出） */}
-                <button
-                  onClick={handleShootPhoto}
-                  aria-label="Shutter"
-                  className="relative w-16 h-16 rounded-full"
-                >
-                  <span className="absolute inset-0 rounded-full border-4 border-white/90"></span>
-                  <span className="absolute inset-1.5 rounded-full bg-white/90"></span>
-                  <IoMdCamera className="absolute inset-0 m-auto text-black text-2xl" />
-                </button>
-
-                {/* 錄影（合成輸出） */}
-                <button
-                  onClick={handleToggleRecord}
-                  aria-label="Record"
-                  className="relative w-16 h-16 rounded-full"
-                >
-                  <span className="absolute inset-0 rounded-full border-4 border-white/90"></span>
-                  <span className="absolute inset-1.5 rounded-full bg-white/90"></span>
-                  <span
-                    className={`absolute inset-3 rounded-md transition-all duration-200 ${
-                      isRecording
-                        ? "bg-red-600 rounded-md"
-                        : "bg-transparent rounded-full"
-                    }`}
-                  />
-                  <AiFillVideoCamera className="absolute inset-0 m-auto text-black text-2xl" />
-                </button>
-                {/* <button
-                  onClick={handleToggleRecord}
-                  aria-label="Record"
-                  className="relative w-16 h-16 rounded-full"
-                >
-                  <span className="absolute inset-0 rounded-full border-4 border-white/90"></span>
-                  <span
-                    className={`absolute inset-3 rounded-md transition-all duration-200 ${
-                      isRecording
-                        ? "bg-red-600 rounded-md"
-                        : "bg-transparent rounded-full"
-                    }`}
-                  />
-                  <AiFillVideoCamera className="absolute inset-0 m-auto text-2xl" />
-                </button> */}
-
-                {/* 前/後鏡頭切換 */}
-                <button
-                  // className="!rounded-full"
-                  className="relative w-16 h-16 rounded-full"
-                  aria-label="SwitchCamera"
-                  onClick={handleToggleCameraFacing}
-                >
-                  {/* <LuRefreshCw className="text-white/90" /> */}
-                  <span className="absolute inset-0 rounded-full border-4 border-white/90"></span>
-                  <span className="absolute inset-1.5 rounded-full bg-white/90"></span>
-                  <LuRefreshCw className="absolute inset-0 m-auto text-black text-2xl" />
-                </button>
-              </div>
-
-              {/* 錄影計時 */}
-              {isRecording && (
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 text-red-500 font-medium">
-                  <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                  <span className="tabular-nums">{fmt(recTime)}</span>
-                </div>
-              )}
-            </div>
-          </div>
+          <Nav
+            isRecording={isRecording}
+            recTime={fmt(recTime)}
+            onShootPhoto={handleShootPhoto}
+            onToggleRecord={handleToggleRecord}
+            onToggleCameraFacing={handleToggleCameraFacing}
+          />
         </>
       ) : (
-        <SceneEnvironmentCanvas />
+        <SceneEnvironmentCanvas
+          onToggleCameraFacing={handleToggleCameraFacing}
+        />
       )}
     </div>
   );

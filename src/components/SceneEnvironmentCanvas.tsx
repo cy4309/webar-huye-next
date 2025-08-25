@@ -3,6 +3,11 @@ import { ARAnchor, ARView } from "react-three-mind";
 //@ts-ignore
 import { ambientLight, pointLight } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
+import Nav from "@/components/Nav";
+
+interface SceneEnvironmentCanvasProps {
+  onToggleCameraFacing: () => void;
+}
 
 const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 const isSmallScreen = window.innerWidth < 768;
@@ -13,19 +18,11 @@ const ARModel = () => {
   return <primitive object={scene} scale={0.5} />;
 };
 
-const SceneEnvironmentCanvas: React.FC = () => {
+const SceneEnvironmentCanvas = ({
+  onToggleCameraFacing,
+}: SceneEnvironmentCanvasProps) => {
   const [found, setFound] = useState(false);
   const mvRef = useRef<any>(null);
-
-  const handleFound = () => {
-    console.log("✅ 圖標掃到！");
-    setFound(true);
-  };
-
-  const handleLost = () => {
-    console.log("🌀 圖標遺失！");
-    setFound(false);
-  };
 
   const handleARButtonClick = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -44,10 +41,7 @@ const SceneEnvironmentCanvas: React.FC = () => {
           window.location.href = "/models/tiger-0822.usdz";
         } else {
           const glb = encodeURIComponent(
-            new URL(
-              "/models/monkeyhead-test.glb",
-              window.location.href
-            ).toString()
+            new URL("/models/tiger-0822.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -63,7 +57,7 @@ const SceneEnvironmentCanvas: React.FC = () => {
 
   return (
     <>
-      <div className="w-full h-[100dvh] relative">
+      <div className="w-full h-full relative">
         {/* AR背景始終顯示 */}
         <ARView
           imageTargets="/models/targets.mind"
@@ -76,12 +70,17 @@ const SceneEnvironmentCanvas: React.FC = () => {
           <pointLight position={[10, 10, 10]} />
           <ARAnchor
             target={0}
-            onAnchorFound={handleFound}
-            onAnchorLost={handleLost}
+            onAnchorFound={() => setFound(true)}
+            onAnchorLost={() => setFound(false)}
           >
             <ARModel />
           </ARAnchor>
         </ARView>
+
+        {/* Nav始終顯示 */}
+        <div className="w-full absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+          <Nav onToggleCameraFacing={onToggleCameraFacing} />
+        </div>
 
         {/* 提示畫面（只在未找到 target 時顯示） */}
         {!found && (
@@ -101,7 +100,7 @@ const SceneEnvironmentCanvas: React.FC = () => {
             <model-viewer
               ref={mvRef}
               ios-src="/models/tiger-0822.usdz"
-              src="/models/monkeyhead-test.glb"
+              src="/models/tiger-0822.glb"
               ar
               ar-modes="scene-viewer webxr quick-look"
               camera-controls
