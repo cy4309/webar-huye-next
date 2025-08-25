@@ -44,7 +44,10 @@ const SceneEnvironmentCanvas: React.FC = () => {
           window.location.href = "/models/tiger-0822.usdz";
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/tiger-0822.glb", window.location.href).toString()
+            new URL(
+              "/models/monkeyhead-test.glb",
+              window.location.href
+            ).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -97,8 +100,8 @@ const SceneEnvironmentCanvas: React.FC = () => {
           <>
             <model-viewer
               ref={mvRef}
-              src="/models/tiger-0822.glb"
               ios-src="/models/tiger-0822.usdz"
+              src="/models/monkeyhead-test.glb"
               ar
               ar-modes="scene-viewer webxr quick-look"
               camera-controls

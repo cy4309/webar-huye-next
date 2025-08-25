@@ -16,6 +16,7 @@
     "@readyplayerme/rpm-react-sdk": "^0.1.3",
     "axios": "^1.7.2",
     "next": "13.4.2",
+    "openurl": "^1.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^4.10.1",
