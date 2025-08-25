@@ -4,6 +4,7 @@ import { ARAnchor, ARView } from "react-three-mind";
 import { ambientLight, pointLight } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import Nav from "@/components/Nav";
+import Image from "next/image";
 
 interface SceneEnvironmentCanvasProps {
   onToggleCameraFacing: () => void;
@@ -85,7 +86,14 @@ const SceneEnvironmentCanvas = ({
         {/* 提示畫面（只在未找到 target 時顯示） */}
         {!found && (
           <div className="w-[300px] border absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-center items-center bg-white/50 backdrop-blur-sm p-6 rounded-lg z-20">
-            <img className="w-[180px]" src="/1_mk_pizza.png" alt="mk_pizza" />
+            {/* <img className="w-[180px]" src="/1_mk_pizza.png" alt="mk_pizza" /> */}
+            <Image
+              src="/1_mk_pizza.png"
+              alt="mk_pizza"
+              width={180}
+              height={180} // 可略為保守填一下，幫助 LCP 評估
+              className="w-[180px] h-auto"
+            />
             <p className="font-bold mt-4">請將相機對準此圖標</p>
             <p className="text-center">
               為了獲得最佳的 AR 體驗

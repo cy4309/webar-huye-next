@@ -3,12 +3,19 @@ import "@/assets/styles/globals.css";
 
 // const inter = Inter({ subsets: ["latin"] });
 
-// export const metadata = {
-//   title: "Mediapipe facelandmarker demo using 3d avatar",
-//   description: "Animate 3d avatar face using mediapipe face-landmarker demo",
-// };
+export const metadata = {
+  title: "Huye Webar demonstration",
+  description: "Mediapipe face-landmarker, Model-viewer",
+  icons: {
+    icon: "/s.png",
+  },
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       {/* <body className={inter.className}>{children}</body> */}
