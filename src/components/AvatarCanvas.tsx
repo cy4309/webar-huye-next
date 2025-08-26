@@ -7,6 +7,8 @@ import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
 import { OrbitControls, Float, Text3D } from "@react-three/drei";
 import FaceMeshMask from "@/components/FaceMeshMask";
 import * as THREE from "three";
+import { getStickerFilenames } from "@/utils/getStickerFilenames";
+
 interface AvatarCanvasProps {
   width: number;
   height: number;
@@ -53,6 +55,8 @@ const AvatarCanvas = ({
   const avatarManagerRef = useRef<AvatarManager>(AvatarManager.getInstance());
   const requestRef = useRef(0);
 
+  const stickerFilenames = getStickerFilenames();
+
   const animate = () => {
     const results = FaceLandmarkManager.getInstance().getResults();
     avatarManagerRef.current.updateFacialTransforms(results, true);
@@ -68,7 +72,7 @@ const AvatarCanvas = ({
     setIsLoading(true);
     const avatarManager = AvatarManager.getInstance();
     avatarManager
-      .loadModel(url, "/foods-roulette.png")
+      .loadModel(url, stickerFilenames)
       .then(() => {
         setScene(avatarManager.getScene());
         setIsLoading(false);
@@ -102,11 +106,14 @@ const AvatarCanvas = ({
         />
         {/* {videoRef.current && <VideoPlane video={videoRef.current} mirrored={mirrored} />} */}
         <FaceMeshMask />
+
+        {/* <StickerRoulette spinning={true} textureNames={stickerFilenames} /> */}
+
         {scene && <primitive object={scene} />}
         {isLoading && (
           <Float floatIntensity={1} speed={1}>
             <Text3D
-              font={"/Open_Sans_Condensed_Bold.json"}
+              font={"/assets/fonts/Open_Sans_Condensed_Bold.json"}
               scale={0.05}
               position={[-0.1, 0.6, 0]}
               bevelEnabled

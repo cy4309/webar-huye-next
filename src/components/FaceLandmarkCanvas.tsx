@@ -10,6 +10,7 @@ import ReadyPlayerCreator from "@/components/ReadyPlayerCreator";
 import AvatarManager from "@/classes/AvatarManager";
 import SceneEnvironmentCanvas from "@/components/SceneEnvironmentCanvas";
 import Nav from "@/components/Nav";
+import { FaArrowsSpin } from "react-icons/fa6";
 
 function pickMime(): string {
   const cand = [
@@ -400,10 +401,9 @@ const FaceLandmarkCanvas = () => {
     setCameraMode(facing);
 
     if (facing === "user") {
-      await animationManager.loadModel(
-        "/models/tiger-hat2.glb",
-        "/foods-roulette.png"
-      );
+      await animationManager.loadModel("/models/tiger-hat2.glb", [
+        "/assets/images/foods_roulette.png",
+      ]);
     } else {
       // await animationManager.loadModel("/tiger-grandpa.glb", "trees-1.png");
       await animationManager.clearScene?.();
@@ -508,6 +508,15 @@ const FaceLandmarkCanvas = () => {
               </>
             )}
           </div>
+
+          <button
+            className="absolute z-50 top-8 right-8 px-4 py-4 rounded-full bg-white/60 text-black text-2xl"
+            onClick={() => {
+              AvatarManager.getInstance().startSpin();
+            }}
+          >
+            <FaArrowsSpin />
+          </button>
 
           {/* iOS 相機風底部工具列 */}
           <Nav

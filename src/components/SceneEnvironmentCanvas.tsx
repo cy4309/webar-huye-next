@@ -86,9 +86,9 @@ const SceneEnvironmentCanvas = ({
         {/* 提示畫面（只在未找到 target 時顯示） */}
         {!found && (
           <div className="w-[300px] border absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-center items-center bg-white/50 backdrop-blur-sm p-6 rounded-lg z-20">
-            {/* <img className="w-[180px]" src="/1_mk_pizza.png" alt="mk_pizza" /> */}
+            {/* <img className="w-[180px]" src="/assets/images/mk_pizza.png" alt="mk_pizza" /> */}
             <Image
-              src="/1_mk_pizza.png"
+              src="/assets/images/mk_pizza.png"
               alt="mk_pizza"
               width={180}
               height={180} // 可略為保守填一下，幫助 LCP 評估

@@ -10,10 +10,14 @@ class AvatarManager {
   private static instance: AvatarManager = new AvatarManager();
   private scene!: THREE.Scene;
   isModelLoaded = false;
-
   private constructor() {
     this.scene = new THREE.Scene();
   }
+  private stickerSprites: THREE.Sprite[] = [];
+  private rotationOffset = 0; // 目前轉動角度（radian）
+  private targetRotation = 0; // 目標角度（用於動畫）
+  private rotationSpeed = 0.05; // 每幀旋轉速度
+  private isSpinning = false;
 
   static getInstance(): AvatarManager {
     return AvatarManager.instance;
@@ -23,7 +27,14 @@ class AvatarManager {
     return this.scene;
   };
 
-  loadModel = async (url?: string, stickerUrl?: string) => {
+  startSpin = () => {
+    this.isSpinning = true;
+    this.rotationSpeed = 0.2 + Math.random() * 0.2; // 隨機速度
+    this.targetRotation =
+      this.rotationOffset + Math.PI * 4 + Math.random() * Math.PI * 2; // 多轉幾圈
+  };
+
+  loadModel = async (url?: string, stickerUrls?: string[]) => {
     this.isModelLoaded = false;
 
     this.clearScene(); // ✅ 清空場景，避免殘留模型或貼圖
@@ -41,21 +52,63 @@ class AvatarManager {
     this.scene.add(gltf.scene);
 
     // ✅ 加入貼紙 sprite，增加錯誤處理
+    // try {
+    //   const textureLoader = new THREE.TextureLoader();
+    //   const stickerTexture = await textureLoader.loadAsync(stickerUrl);
+
+    //   this.stickerSprite = new THREE.Sprite(
+    //     new THREE.SpriteMaterial({
+    //       map: stickerTexture,
+    //       transparent: true,
+    //       color: 0xffffff,
+    //     })
+    //   );
+    //   this.stickerSprite.scale.set(0.5, 0.5, 1);
+    //   this.scene.add(this.stickerSprite);
+    // } catch (err) {
+    //   console.error("🚨 貼紙載入失敗！貼紙 URL 可能錯誤或取得的是 HTML", err);
+    // }
+
+    // ✅ 加入多個貼紙 sprites，繞圓排列，並增加錯誤處理
     try {
       const textureLoader = new THREE.TextureLoader();
-      const stickerTexture = await textureLoader.loadAsync(stickerUrl);
+      const radius = 1.2;
+      const stickers: THREE.Sprite[] = [];
 
-      this.stickerSprite = new THREE.Sprite(
-        new THREE.SpriteMaterial({
-          map: stickerTexture,
-          transparent: true,
-          color: 0xffffff,
-        })
-      );
-      this.stickerSprite.scale.set(0.5, 0.5, 1);
-      this.scene.add(this.stickerSprite);
+      for (let i = 0; i < stickerUrls.length; i++) {
+        const stickerUrl = stickerUrls[i];
+
+        try {
+          const texture = await textureLoader.loadAsync(
+            `/assets/images/stickers/${stickerUrl}.png`
+          );
+
+          const spriteMaterial = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            color: 0xffffff,
+          });
+
+          const sprite = new THREE.Sprite(spriteMaterial);
+          sprite.scale.set(0.1, 0.1, 1);
+
+          const angle = (i / stickerUrls.length) * Math.PI * 2;
+          sprite.position.set(
+            Math.cos(angle) * radius,
+            0.6,
+            Math.sin(angle) * radius
+          );
+
+          this.scene.add(sprite);
+          stickers.push(sprite);
+        } catch (innerErr) {
+          console.error(`🚨 第 ${i} 張貼紙載入失敗 (${stickerUrl})`, innerErr);
+        }
+      }
+
+      this.stickerSprites = stickers;
     } catch (err) {
-      console.error("🚨 貼紙載入失敗！貼紙 URL 可能錯誤或取得的是 HTML", err);
+      console.error("🚨 整體貼紙陣列載入失敗！", err);
     }
 
     // make hands invisible
@@ -117,13 +170,47 @@ class AvatarManager {
     }
 
     // 貼紙 sprite 跟著場景移動（例如跟著頭部）
-    if (this.stickerSprite) {
-      this.stickerSprite.position.set(
-        translation.x * 0.01,
-        translation.y * 0.03 + 0.8, // 可微調高度
-        (translation.z + 50) * 0.02
-      );
-      this.stickerSprite.renderOrder = 10; // 保證在最前面
+    // if (this.stickerSprite) {
+    //   console.log(this.stickerSprite);
+    //   this.stickerSprite.position.set(
+    //     translation.x * 0.01,
+    //     translation.y * 0.03 + 0.8, // 可微調高度
+    //     (translation.z + 50) * 0.02
+    //   );
+    //   this.stickerSprite.renderOrder = 10; // 保證在最前面
+    // }
+
+    // ✅ 多貼圖繞圓排列並貼臉部更新
+    if (this.stickerSprites && this.stickerSprites.length > 0) {
+      const radius = 0.2;
+      const centerX = translation.x * 0.01;
+      const centerY = translation.y * 0.03 + 0.8;
+      const centerZ = (translation.z + 50) * 0.02;
+
+      // 🎯 若轉動中，更新 offset
+      if (this.isSpinning) {
+        this.rotationOffset += this.rotationSpeed;
+
+        // 🎯 慢慢逼近目標角度（簡單 easing）
+        if (this.rotationOffset >= this.targetRotation) {
+          this.isSpinning = false;
+          this.rotationOffset = this.targetRotation % (Math.PI * 2); // 歸一化
+        }
+      }
+
+      const total = this.stickerSprites.length;
+
+      this.stickerSprites.forEach((sprite, index) => {
+        const baseAngle = (index / total) * Math.PI * 2;
+        const angle = baseAngle + this.rotationOffset;
+
+        const x = centerX + radius * Math.sin(angle);
+        const y = centerY + radius * Math.cos(angle);
+        const z = centerZ + radius;
+
+        sprite.position.set(x, y, z);
+        sprite.lookAt(centerX, y, centerZ + 1);
+      });
     }
 
     // ★ 朝向修正：水平旋轉 90°
@@ -174,6 +261,7 @@ class AvatarManager {
     });
     this.hatObject = undefined;
     this.stickerSprite = undefined;
+    this.stickerSprites = [];
   };
 }
 

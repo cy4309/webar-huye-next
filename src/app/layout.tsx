@@ -1,4 +1,4 @@
-import "@/assets/styles/globals.css";
+import "@/styles/globals.css";
 // import { Inter } from "next/font/google";
 
 // const inter = Inter({ subsets: ["latin"] });
@@ -7,7 +7,7 @@ export const metadata = {
   title: "Huye Webar demonstration",
   description: "Mediapipe face-landmarker, Model-viewer",
   icons: {
-    icon: "/s.png",
+    icon: "/assets/images/s.png",
   },
 };
 
