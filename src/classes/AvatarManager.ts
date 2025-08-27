@@ -13,11 +13,13 @@ class AvatarManager {
   private constructor() {
     this.scene = new THREE.Scene();
   }
+  private stickerUrls: string[] = [];
   private stickerSprites: THREE.Sprite[] = [];
   private rotationOffset = 0; // 目前轉動角度（radian）
   private targetRotation = 0; // 目標角度（用於動畫）
   private rotationSpeed = 0.05; // 每幀旋轉速度
   private isSpinning = false;
+  private hasHighlighted = false;
 
   static getInstance(): AvatarManager {
     return AvatarManager.instance;
@@ -36,6 +38,7 @@ class AvatarManager {
 
   loadModel = async (url?: string, stickerUrls?: string[]) => {
     this.isModelLoaded = false;
+    this.stickerUrls = stickerUrls;
 
     this.clearScene(); // ✅ 清空場景，避免殘留模型或貼圖
     if (this.scene.children.length === 1) {
@@ -51,33 +54,15 @@ class AvatarManager {
     });
     this.scene.add(gltf.scene);
 
-    // ✅ 加入貼紙 sprite，增加錯誤處理
-    // try {
-    //   const textureLoader = new THREE.TextureLoader();
-    //   const stickerTexture = await textureLoader.loadAsync(stickerUrl);
-
-    //   this.stickerSprite = new THREE.Sprite(
-    //     new THREE.SpriteMaterial({
-    //       map: stickerTexture,
-    //       transparent: true,
-    //       color: 0xffffff,
-    //     })
-    //   );
-    //   this.stickerSprite.scale.set(0.5, 0.5, 1);
-    //   this.scene.add(this.stickerSprite);
-    // } catch (err) {
-    //   console.error("🚨 貼紙載入失敗！貼紙 URL 可能錯誤或取得的是 HTML", err);
-    // }
-
-    // ✅ 加入多個貼紙 sprites，繞圓排列，並增加錯誤處理
+    // ✅ 加入多個貼紙 sprites，繞圓Y軸排列，並增加錯誤處理
     try {
       const textureLoader = new THREE.TextureLoader();
-      const radius = 1.2;
+      const radius = 1.2; // 決定圓圈的半徑，可視需求加大或縮小
+      const yHeight = 0.6; // 貼紙圈的垂直高度位置
       const stickers: THREE.Sprite[] = [];
 
       for (let i = 0; i < stickerUrls.length; i++) {
         const stickerUrl = stickerUrls[i];
-
         try {
           const texture = await textureLoader.loadAsync(
             `/assets/images/stickers/${stickerUrl}.png`
@@ -90,22 +75,20 @@ class AvatarManager {
           });
 
           const sprite = new THREE.Sprite(spriteMaterial);
-          sprite.scale.set(0.1, 0.1, 1);
+          sprite.scale.set(0.1, 0.1, 1); // 可調整貼紙大小
 
           const angle = (i / stickerUrls.length) * Math.PI * 2;
-          sprite.position.set(
-            Math.cos(angle) * radius,
-            0.6,
-            Math.sin(angle) * radius
-          );
+          const x = Math.sin(angle) * radius;
+          const z = Math.cos(angle) * radius;
 
+          sprite.position.set(x, yHeight, z);
+          sprite.lookAt(0, yHeight, 0); // 保證貼紙朝向圓心（避免歪斜）
           this.scene.add(sprite);
           stickers.push(sprite);
         } catch (innerErr) {
           console.error(`🚨 第 ${i} 張貼紙載入失敗 (${stickerUrl})`, innerErr);
         }
       }
-
       this.stickerSprites = stickers;
     } catch (err) {
       console.error("🚨 整體貼紙陣列載入失敗！", err);
@@ -169,32 +152,21 @@ class AvatarManager {
       translation.x *= -1;
     }
 
-    // 貼紙 sprite 跟著場景移動（例如跟著頭部）
-    // if (this.stickerSprite) {
-    //   console.log(this.stickerSprite);
-    //   this.stickerSprite.position.set(
-    //     translation.x * 0.01,
-    //     translation.y * 0.03 + 0.8, // 可微調高度
-    //     (translation.z + 50) * 0.02
-    //   );
-    //   this.stickerSprite.renderOrder = 10; // 保證在最前面
-    // }
-
     // ✅ 多貼圖繞圓排列並貼臉部更新
     if (this.stickerSprites && this.stickerSprites.length > 0) {
-      const radius = 0.2;
-      const centerX = translation.x * 0.01;
-      const centerY = translation.y * 0.03 + 0.8;
+      const radius = 0.15; // 轉動時的半徑，可與上面載入 radius 不同
+      const centerX = translation.x * 0.005;
+      const centerY = translation.y * 0.015 + 0.65; // 調整圓圈高度（可上下微調）
       const centerZ = (translation.z + 50) * 0.02;
 
       // 🎯 若轉動中，更新 offset
       if (this.isSpinning) {
-        this.rotationOffset += this.rotationSpeed;
+        this.rotationOffset += this.rotationSpeed; // 調整旋轉速度
 
-        // 🎯 慢慢逼近目標角度（簡單 easing）
+        // 🎯 緩速逼近停止點（可實作 easing）
         if (this.rotationOffset >= this.targetRotation) {
           this.isSpinning = false;
-          this.rotationOffset = this.targetRotation % (Math.PI * 2); // 歸一化
+          this.rotationOffset = this.targetRotation % (Math.PI * 2); // 歸一化角度
         }
       }
 
@@ -204,21 +176,98 @@ class AvatarManager {
         const baseAngle = (index / total) * Math.PI * 2;
         const angle = baseAngle + this.rotationOffset;
 
+        // 繞 Y 軸轉動（x-z 變化，y 固定）
         const x = centerX + radius * Math.sin(angle);
         const y = centerY + radius * Math.cos(angle);
         const z = centerZ + radius;
 
         sprite.position.set(x, y, z);
-        sprite.lookAt(centerX, y, centerZ + 1);
+        sprite.lookAt(centerX, y, centerZ + 1); // 每張貼紙保持面向圓心
       });
     }
 
-    // ★ 朝向修正：水平旋轉 90°
-    // const fixRotation = new THREE.Quaternion().setFromAxisAngle(
-    //   new THREE.Vector3(0, 1, 0),
-    //   -Math.PI / 2
-    // );
-    // quaternion.multiply(fixRotation);
+    if (!this.isSpinning && this.stickerSprites?.length > 0) {
+      const total = this.stickerSprites.length;
+      const normalizedOffset = this.rotationOffset % (Math.PI * 2);
+
+      const targetAngle = 0; // 正上方
+      // const targetAngle = Math.PI; // 正下方
+
+      let closestIndex = 0;
+      let smallestDiff = Infinity;
+
+      for (let i = 0; i < total; i++) {
+        const angle = (i / total) * Math.PI * 2;
+        const currentAngle = (angle + normalizedOffset) % (Math.PI * 2);
+
+        const diff = Math.abs(currentAngle - targetAngle);
+        if (diff < smallestDiff) {
+          smallestDiff = diff;
+          closestIndex = i;
+        }
+      }
+
+      // ✅ 當貼紙旋轉停止後，執行高亮與 3 秒後還原
+      if (
+        !this.isSpinning &&
+        this.stickerSprites?.length > 0 &&
+        !this.hasHighlighted
+      ) {
+        const total = this.stickerSprites.length;
+        const normalizedOffset = this.rotationOffset % (Math.PI * 2);
+        const targetAngle = 0;
+
+        let closestIndex = 0;
+        let smallestDiff = Infinity;
+
+        for (let i = 0; i < total; i++) {
+          const angle = (i / total) * Math.PI * 2;
+          const currentAngle = (angle + normalizedOffset) % (Math.PI * 2);
+          const diff = Math.abs(currentAngle - targetAngle);
+          if (diff < smallestDiff) {
+            smallestDiff = diff;
+            closestIndex = i;
+          }
+        }
+
+        // ✅ 先將所有貼紙透明度設為 1
+        // this.stickerSprites.forEach((sprite) => {
+        //   const material = sprite.material as THREE.SpriteMaterial;
+        //   material.opacity = 1.0;
+        //   sprite.scale.set(0.1, 0.1, 1);
+        // });
+
+        //  // ✅ 讓中選的貼紙變亮、變大
+        // const selected = this.stickerSprites[closestIndex];
+        // const selectedMat = selected.material as THREE.SpriteMaterial;
+        // selectedMat.opacity = 1.0;
+        // selected.scale.set(0.15, 0.15, 1);
+
+        // ✅ 選中貼紙視覺變化
+        this.stickerSprites.forEach((sprite, idx) => {
+          const mat = sprite.material as THREE.SpriteMaterial;
+          if (idx === closestIndex) {
+            mat.opacity = 1.0;
+            sprite.scale.set(0.15, 0.15, 1);
+          } else {
+            mat.opacity = 0.3;
+            sprite.scale.set(0.1, 0.1, 1);
+          }
+        });
+
+        this.hasHighlighted = true;
+
+        // ✅ 1秒後自動恢復所有貼紙外觀
+        setTimeout(() => {
+          this.stickerSprites.forEach((sprite) => {
+            const mat = sprite.material as THREE.SpriteMaterial;
+            mat.opacity = 1.0;
+            sprite.scale.set(0.1, 0.1, 1);
+          });
+          this.hasHighlighted = false;
+        }, 1000);
+      }
+    }
 
     const hat = this.hatObject;
     if (hat) {
