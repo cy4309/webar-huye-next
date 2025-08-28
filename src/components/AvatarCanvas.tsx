@@ -87,7 +87,8 @@ const AvatarCanvas = ({
   return (
     <div className="absolute" style={{ width: width, height: height }}>
       <Canvas
-        camera={{ fov: 30, position: [0, 0.5, 1] }}
+        // camera={{ fov: 30, position: [0, 0.5, 1] }}
+        camera={{ fov: 45, position: [0, 0.5, 1] }}
         gl={{ preserveDrawingBuffer: true }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.NoToneMapping;
@@ -100,9 +101,11 @@ const AvatarCanvas = ({
         <OrbitControls
           target={[0, 0.6, 0]}
           enableDamping={false}
+          enablePan={false}
           enableRotate={false}
           enableZoom={false}
-          enablePan={false}
+          // enableRotate={true}
+          // enableZoom={true}
         />
         {/* {videoRef.current && <VideoPlane video={videoRef.current} mirrored={mirrored} />} */}
         <FaceMeshMask />

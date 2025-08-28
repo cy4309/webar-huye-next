@@ -4,6 +4,9 @@
 import * as THREE from "three";
 import { loadGltf } from "@/utils/loaders";
 import { FaceLandmarkerResult } from "@mediapipe/tasks-vision";
+// FaceLandmarkerResult: faceBlendshapes 通常搭配 3D 頭像 (例如 VRM 模型) 使用，可以讓模型「做表情」。
+// FaceLandmarkerResult: facialTransformationMatrixes 功能：提供 3D 頭部的「位置 + 旋轉 + 縮放」矩陣（4x4 matrix）。
+// FaceLandmarkerResult: faceLandmarks 功能：臉部特徵點，共 478 個點，包含輪廓、眼睛、嘴巴、鼻子等。 用途：建立遮罩（如你現在的 FaceMeshMask）。
 import { decomposeMatrix } from "@/utils/decomposeMatrix";
 
 class AvatarManager {
@@ -68,6 +71,10 @@ class AvatarManager {
             `/assets/images/stickers/${stickerUrl}.png`
           );
 
+          // ⬇️ 根據圖片實際寬高自動計算貼紙比例
+          const imageAspect = texture.image.width / texture.image.height;
+          const baseScale = 0.12; // 你可以視覺上微調這個值
+
           const spriteMaterial = new THREE.SpriteMaterial({
             map: texture,
             transparent: true,
@@ -75,7 +82,9 @@ class AvatarManager {
           });
 
           const sprite = new THREE.Sprite(spriteMaterial);
-          sprite.scale.set(0.1, 0.1, 1); // 可調整貼紙大小
+          // sprite.scale.set(0.1, 0.1, 1); // 可調整貼紙大小
+          // ⬇️ 設定貼紙正確比例（以高度為主，寬度跟著跑）
+          sprite.scale.set(baseScale * imageAspect, baseScale, 1);
 
           const angle = (i / stickerUrls.length) * Math.PI * 2;
           const x = Math.sin(angle) * radius;
