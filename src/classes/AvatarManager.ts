@@ -199,8 +199,8 @@ class AvatarManager {
       const total = this.stickerSprites.length;
       const normalizedOffset = this.rotationOffset % (Math.PI * 2);
 
-      const targetAngle = 0; // 正上方
-      // const targetAngle = Math.PI; // 正下方
+      // const targetAngle = 0; // 正上方
+      const targetAngle = Math.PI; // 正下方
 
       let closestIndex = 0;
       let smallestDiff = Infinity;
@@ -224,7 +224,8 @@ class AvatarManager {
       ) {
         const total = this.stickerSprites.length;
         const normalizedOffset = this.rotationOffset % (Math.PI * 2);
-        const targetAngle = 0;
+        // const targetAngle = 0;
+        const targetAngle = Math.PI; // 正下方
 
         let closestIndex = 0;
         let smallestDiff = Infinity;

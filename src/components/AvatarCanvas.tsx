@@ -87,8 +87,8 @@ const AvatarCanvas = ({
   return (
     <div className="absolute" style={{ width: width, height: height }}>
       <Canvas
-        // camera={{ fov: 30, position: [0, 0.5, 1] }}
-        camera={{ fov: 45, position: [0, 0.5, 1] }}
+        camera={{ fov: 30, position: [0, 0.5, 1] }}
+        // camera={{ fov: 45, position: [0, 0.5, 1], near: 0.01, far: 100 }}
         gl={{ preserveDrawingBuffer: true }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.NoToneMapping;

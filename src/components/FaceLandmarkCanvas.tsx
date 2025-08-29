@@ -510,12 +510,13 @@ const FaceLandmarkCanvas = () => {
           </div>
 
           <button
-            className="absolute z-50 top-8 right-8 px-4 py-4 rounded-full bg-white/60 text-black text-2xl"
+            className="absolute z-50 top-8 right-8 px-4 py-4 rounded-full bg-white/60 text-black font-bold"
             onClick={() => {
               AvatarManager.getInstance().startSpin();
             }}
           >
-            <FaArrowsSpin />
+            {/* <FaArrowsSpin /> */}
+            點擊開始
           </button>
 
           {/* iOS 相機風底部工具列 */}
