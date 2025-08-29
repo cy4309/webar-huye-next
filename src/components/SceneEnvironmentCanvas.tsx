@@ -39,10 +39,10 @@ const SceneEnvironmentCanvas = ({
       } else {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         if (isIOS) {
-          window.location.href = "/models/tiger-0822.usdz";
+          window.location.href = "/models/tiger-0829.usdz";
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/tiger-0822.glb", window.location.href).toString()
+            new URL("/models/tiger-0829.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -107,8 +107,8 @@ const SceneEnvironmentCanvas = ({
           <>
             <model-viewer
               ref={mvRef}
-              ios-src="/models/tiger-0822.usdz"
-              src="/models/tiger-0822.glb"
+              ios-src="/models/tiger-0829.usdz"
+              src="/models/tiger-0829.glb"
               ar
               ar-modes="scene-viewer webxr quick-look"
               camera-controls
