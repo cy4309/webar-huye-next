@@ -163,7 +163,7 @@ class AvatarManager {
 
     // ✅ 多貼圖繞圓排列並貼臉部更新
     if (this.stickerSprites && this.stickerSprites.length > 0) {
-      const radius = 0.15; // 轉動時的半徑，可與上面載入 radius 不同
+      const radius = 0.18; // 轉動時的半徑，可與上面載入 radius 不同
       const centerX = translation.x * 0.005;
       const centerY = translation.y * 0.015 + 0.65; // 調整圓圈高度（可上下微調）
       const centerZ = (translation.z + 50) * 0.02;
