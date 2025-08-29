@@ -42,7 +42,7 @@ const SceneEnvironmentCanvas = ({
           window.location.href = "/models/tiger-0829.usdz";
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/tiger-0829.glb", window.location.href).toString()
+            new URL("/models/tiger-0829a.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -108,7 +108,7 @@ const SceneEnvironmentCanvas = ({
             <model-viewer
               ref={mvRef}
               ios-src="/models/tiger-0829.usdz"
-              src="/models/tiger-0829.glb"
+              src="/models/tiger-0829a.glb"
               ar
               ar-modes="scene-viewer webxr quick-look"
               camera-controls

@@ -3,19 +3,23 @@ import { AiFillVideoCamera } from "react-icons/ai";
 import { LuRefreshCw } from "react-icons/lu";
 
 interface NavProps {
+  avatarView?: boolean;
   isRecording?: boolean;
   recTime?: string;
   onShootPhoto?: () => void;
   onToggleRecord?: () => void;
   onToggleCameraFacing: () => void;
+  onToggleAvatarView?: () => void;
 }
 
 export default function Nav({
+  avatarView,
   isRecording,
   recTime,
   onShootPhoto,
   onToggleRecord,
   onToggleCameraFacing,
+  onToggleAvatarView,
 }: NavProps) {
   if (!onToggleCameraFacing) return null;
 
@@ -25,11 +29,13 @@ export default function Nav({
         <div className="w-full pb-8 absolute bottom-0 left-0 right-0 flex justify-center">
           <div className="gap-8 px-6 py-3 flex justify-center items-center rounded-full bg-black/40 backdrop-blur-md border border-white/10">
             {/* 模式切換 */}
-            {/* <BaseButton onClick={toggleAvatarView} className="!rounded-full">
-              <span className="text-white/90 text-sm tracking-wide">
-                {avatarView ? "Avatar" : "Landmark"}
-              </span>
-            </BaseButton> */}
+            {onToggleAvatarView && (
+              <button onClick={onToggleAvatarView} className="!rounded-full">
+                <span className="text-white/90 text-sm tracking-wide">
+                  {avatarView ? "Avatar" : "Landmark"}
+                </span>
+              </button>
+            )}
 
             {/* 拍照（合成輸出） */}
             {onShootPhoto && (

@@ -3,14 +3,14 @@
 /** @description 包含整體邏輯的容器元件：開啟攝影機、取得媒體串流、切換 view、初始化 AvatarManager、呼叫動畫 loop、拍照/錄影（合成輸出）等。 */
 
 import { useEffect, useRef, useState } from "react";
-// import DrawLandmarkCanvas from "@/components/DrawLandmarkCanvas";
+import DrawLandmarkCanvas from "@/components/DrawLandmarkCanvas";
 import AvatarCanvas from "@/components/AvatarCanvas";
 import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
 import ReadyPlayerCreator from "@/components/ReadyPlayerCreator";
 import AvatarManager from "@/classes/AvatarManager";
 import SceneEnvironmentCanvas from "@/components/SceneEnvironmentCanvas";
 import Nav from "@/components/Nav";
-import { FaArrowsSpin } from "react-icons/fa6";
+// import { FaArrowsSpin } from "react-icons/fa6";
 
 function pickMime(): string {
   const cand = [
@@ -31,7 +31,7 @@ const FaceLandmarkCanvas = () => {
   const lastVideoTimeRef = useRef(-1);
   const requestRef = useRef(0);
 
-  // const [avatarView, setAvatarView] = useState(true);
+  const [avatarView, setAvatarView] = useState(true);
   const [showAvatarCreator, setShowAvatarCreator] = useState(false);
   const [modelUrl, setModelUrl] = useState("/models/tiger-hat2.glb");
   const [videoSize, setVideoSize] = useState<{
@@ -173,8 +173,7 @@ const FaceLandmarkCanvas = () => {
     }
   }, [isCameraReady]);
 
-  // const toggleAvatarView = () => setAvatarView((prev) => !prev);
-
+  const handleToggleAvatarView = () => setAvatarView((prev) => !prev);
   const toggleAvatarCreatorView = () => setShowAvatarCreator((prev) => !prev);
   const handleAvatarCreationComplete = (url: string) => {
     setModelUrl(url);
@@ -473,7 +472,7 @@ const FaceLandmarkCanvas = () => {
                   />
                 )}
                 {/* Avatar 視圖：建議在 AvatarCanvas 裡加 onCanvasReady={(el)=> r3fCanvasRef.current=el} */}
-                <AvatarCanvas
+                {/* <AvatarCanvas
                   width={videoSize.width}
                   height={videoSize.height}
                   // url={modelUrl}
@@ -482,29 +481,30 @@ const FaceLandmarkCanvas = () => {
                   onCanvasReady={(el: HTMLCanvasElement) =>
                     (r3fCanvasRef.current = el)
                   }
-                />
-                {/* {avatarView ? (
-              <AvatarCanvas
-                width={videoSize.width}
-                height={videoSize.height}
-                // url={modelUrl}
-                url="/models/tiger-hat2.glb"
-                // @ts-ignore 若你的 AvatarCanvas 還沒加這個 prop，不影響執行；會走 DOM fallback
-                onCanvasReady={(el: HTMLCanvasElement) =>
-                  (r3fCanvasRef.current = el)
-                }
-              />
-            ) : (
-              <DrawLandmarkCanvas
-                width={videoSize.width}
-                height={videoSize.height}
-                // @ts-ignore 同上，先讓它可回傳 canvas；若未實作會走 DOM fallback
-                onCanvasReady={(el: HTMLCanvasElement) => {
-                  el.id = "landmark-overlay"; // 也放個 id，fallback 會找得到
-                  overlayCanvasRef.current = el;
-                }}
-              />
-            )} */}
+                /> */}
+
+                {avatarView ? (
+                  <AvatarCanvas
+                    width={videoSize.width}
+                    height={videoSize.height}
+                    // url={modelUrl}
+                    url="/models/tiger-hat2.glb"
+                    // @ts-ignore 若你的 AvatarCanvas 還沒加這個 prop，不影響執行；會走 DOM fallback
+                    onCanvasReady={(el: HTMLCanvasElement) =>
+                      (r3fCanvasRef.current = el)
+                    }
+                  />
+                ) : (
+                  <DrawLandmarkCanvas
+                    width={videoSize.width}
+                    height={videoSize.height}
+                    // @ts-ignore 同上，先讓它可回傳 canvas；若未實作會走 DOM fallback
+                    onCanvasReady={(el: HTMLCanvasElement) => {
+                      el.id = "landmark-overlay"; // 也放個 id，fallback 會找得到
+                      overlayCanvasRef.current = el;
+                    }}
+                  />
+                )}
               </>
             )}
           </div>
@@ -521,11 +521,13 @@ const FaceLandmarkCanvas = () => {
 
           {/* iOS 相機風底部工具列 */}
           <Nav
+            avatarView={avatarView}
             isRecording={isRecording}
             recTime={fmt(recTime)}
             onShootPhoto={handleShootPhoto}
             onToggleRecord={handleToggleRecord}
             onToggleCameraFacing={handleToggleCameraFacing}
+            onToggleAvatarView={handleToggleAvatarView}
           />
         </>
       ) : (

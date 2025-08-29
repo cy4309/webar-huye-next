@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
 import * as THREE from "three";
-import faceMeshIndices from "@/utils/faceMeshIndices";
+// import faceMeshIndices from "@/utils/faceMeshIndices";
 import { BoxHelper } from "three";
 
 const FaceMeshMask = () => {
@@ -27,16 +27,6 @@ const FaceMeshMask = () => {
       const positions: number[] = [];
       const indices: number[] = [];
 
-      geometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(positions, 3)
-      );
-      geometry.setIndex(indices);
-      geometry.computeVertexNormals();
-
-      meshRef.current.geometry.dispose();
-      meshRef.current.geometry = geometry;
-
       // ✅ 轉換 landmark 點位為 3D 世界座標
       // landmarks.forEach((pt) => {
       //   const vec = new THREE.Vector3(pt.x - 0.5, -(pt.y - 0.5), pt.z);
@@ -47,7 +37,17 @@ const FaceMeshMask = () => {
       //   indices.push(tri[0], tri[1], tri[2]);
       // });
 
-      // // ✅ 顯示 BoxHelper 框線（debug 用）
+      geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(positions, 3)
+      );
+      geometry.setIndex(indices);
+      geometry.computeVertexNormals();
+
+      meshRef.current.geometry.dispose();
+      meshRef.current.geometry = geometry;
+
+      // ✅ 顯示 BoxHelper 框線（debug 用）
       // if (!helperRef.current) {
       //   helperRef.current = new THREE.BoxHelper(meshRef.current, 0x00ff00);
       //   meshRef.current.parent?.add(helperRef.current);
@@ -64,9 +64,9 @@ const FaceMeshMask = () => {
         depthTest={true}
         transparent={true}
         colorWrite={true}
-        // side={THREE.BackSide}
-        side={THREE.DoubleSide}
-        color={"red"}
+        side={THREE.BackSide}
+        // side={THREE.DoubleSide}
+        // color={"red"}
       />
     </mesh>
   );
