@@ -1,12 +1,12 @@
 //@ts-nocheck
 /** @description 控制 3D avatar（如帽子模型）的載入與變形，包括跟踪臉部資訊（translation/rotation）並套用到模型上  */
+/** @description FaceLandmarkerResult: faceLandmarks 功能：臉部特徵點，共 478 個點，包含輪廓、眼睛、嘴巴、鼻子等。 用途：建立遮罩（如你現在的 FaceMeshMask）。  */
+/** @description FaceLandmarkerResult: facialTransformationMatrixes 功能：提供 3D 頭部的「位置 + 旋轉 + 縮放」矩陣（4x4 matrix）。  */
+/** @description FaceLandmarkerResult: faceBlendshapes 通常搭配 3D 頭像 (例如 VRM 模型) 使用，可以讓模型「做表情」。  */
 
 import * as THREE from "three";
 import { loadGltf } from "@/utils/loaders";
 import { FaceLandmarkerResult } from "@mediapipe/tasks-vision";
-// FaceLandmarkerResult: faceBlendshapes 通常搭配 3D 頭像 (例如 VRM 模型) 使用，可以讓模型「做表情」。
-// FaceLandmarkerResult: facialTransformationMatrixes 功能：提供 3D 頭部的「位置 + 旋轉 + 縮放」矩陣（4x4 matrix）。
-// FaceLandmarkerResult: faceLandmarks 功能：臉部特徵點，共 478 個點，包含輪廓、眼睛、嘴巴、鼻子等。 用途：建立遮罩（如你現在的 FaceMeshMask）。
 import { decomposeMatrix } from "@/utils/decomposeMatrix";
 
 class AvatarManager {
@@ -23,6 +23,7 @@ class AvatarManager {
   private rotationSpeed = 0.05; // 每幀旋轉速度
   private isSpinning = false;
   private hasHighlighted = false;
+  private occluderMesh?: THREE.Mesh;
 
   static getInstance(): AvatarManager {
     return AvatarManager.instance;
@@ -285,21 +286,50 @@ class AvatarManager {
       hat.scale.set(0.9, 0.9, 0.9);
       hat.position.set(
         translation.x * 0.01,
-        translation.y * 0.01 + 0.6, // 頭頂偏移
+        translation.y * 0.01 + 0.62, // 頭頂偏移
         (translation.z + 50) * 0.02
       );
 
       hat.renderOrder = 2;
       hat.traverse((child) => {
         if (child instanceof THREE.Mesh) {
+          child.material.depthWrite = true;
           child.material.depthTest = true;
           child.material.colorWrite = true;
           child.material.transparent = false;
           child.renderOrder = 2;
-          // child.material.depthWrite = false;
           // child.material.color = "red";
         }
       });
+
+      // occluder
+      const geometry = new THREE.SphereGeometry(
+        0.13,
+        32,
+        16,
+        0,
+        Math.PI * 2,
+        0,
+        Math.PI / 2
+      );
+      const material = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        colorWrite: false, // 只寫入深度，不顯示顏色
+        depthTest: true,
+        depthWrite: true,
+        transparent: true,
+        opacity: 0,
+        side: THREE.DoubleSide,
+      });
+
+      const occluder = new THREE.Mesh(geometry, material);
+      occluder.name = "HatOccluder";
+
+      occluder.position.set(0, -0.04, -0.1);
+      occluder.rotation.set(0, 0, 0); // 視模型朝向調整（如需）
+
+      this.hatObject.add(occluder);
+      this.occluderMesh = occluder;
     }
 
     const Head = this.scene.getObjectByName("Head");

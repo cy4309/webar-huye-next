@@ -398,15 +398,15 @@ const FaceLandmarkCanvas = () => {
     const mirrored = facing === "user";
     const animationManager = AvatarManager.getInstance();
     setCameraMode(facing);
-
-    if (facing === "user") {
-      await animationManager.loadModel("/models/tiger-hat2.glb", [
-        "/assets/images/foods_roulette.png",
-      ]);
-    } else {
-      // await animationManager.loadModel("/tiger-grandpa.glb", "trees-1.png");
-      await animationManager.clearScene?.();
-    }
+    await animationManager.clearScene?.();
+    // if (facing === "user") {
+    //   await animationManager.loadModel(
+    //     "/models/tiger-hat2.glb",
+    //     stickerFilenames
+    //   );
+    // } else {
+    //   await animationManager.clearScene?.();
+    // }
     return mirrored;
   };
 
