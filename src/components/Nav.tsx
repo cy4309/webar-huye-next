@@ -69,21 +69,6 @@ export default function Nav({
                 <AiFillVideoCamera className="absolute inset-0 m-auto text-black text-2xl" />
               </button>
             )}
-            {/* <button
-                  onClick={handleToggleRecord}
-                  aria-label="Record"
-                  className="relative w-16 h-16 rounded-full"
-                >
-                  <span className="absolute inset-0 rounded-full border-4 border-white/90"></span>
-                  <span
-                    className={`absolute inset-3 rounded-md transition-all duration-200 ${
-                      isRecording
-                        ? "bg-red-600 rounded-md"
-                        : "bg-transparent rounded-full"
-                    }`}
-                  />
-                  <AiFillVideoCamera className="absolute inset-0 m-auto text-2xl" />
-                </button> */}
 
             {/* 前/後鏡頭切換 */}
             {onToggleCameraFacing && (

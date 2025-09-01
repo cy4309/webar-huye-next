@@ -146,6 +146,7 @@ class AvatarManager {
     });
   };
 
+  // #region updateTranslation
   updateTranslation = (results: FaceLandmarkerResult, flipped = true) => {
     if (!results.facialTransformationMatrixes) return;
 
@@ -162,6 +163,7 @@ class AvatarManager {
       translation.x *= -1;
     }
 
+    // #region stickers
     // ✅ 多貼圖繞圓排列並貼臉部更新
     if (this.stickerSprites && this.stickerSprites.length > 0) {
       const radius = 0.18; // 轉動時的半徑，可與上面載入 radius 不同
@@ -261,7 +263,7 @@ class AvatarManager {
             mat.opacity = 1.0;
             sprite.scale.set(0.15, 0.15, 1);
           } else {
-            mat.opacity = 0.3;
+            // mat.opacity = 0.3;
             sprite.scale.set(0.1, 0.1, 1);
           }
         });
@@ -280,6 +282,7 @@ class AvatarManager {
       }
     }
 
+    // #region hat
     const hat = this.hatObject;
     if (hat) {
       hat.quaternion.copy(quaternion);
@@ -302,7 +305,7 @@ class AvatarManager {
         }
       });
 
-      // occluder
+      // #region occluder
       const geometry = new THREE.SphereGeometry(
         0.13,
         32,

@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import AvatarManager from "@/classes/AvatarManager";
 import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
 import { OrbitControls, Float, Text3D } from "@react-three/drei";
-// import FaceMeshMask from "@/components/FaceMeshMask";
 import * as THREE from "three";
 import { getStickerFilenames } from "@/utils/getStickerFilenames";
+// import FaceMeshMask from "@/components/FaceMeshMask";
 // import OccluderCylinder from "@/components/OccluderCylinder";
 
 interface AvatarCanvasProps {
@@ -89,13 +89,6 @@ const AvatarCanvas = ({
     <div className="absolute" style={{ width: width, height: height }}>
       <Canvas
         camera={{ fov: 30, position: [0, 0.5, 1] }}
-        // camera={{
-        //   fov: 45,
-        //   position: [0, 0.5, 1],
-        //   near: 0.01,
-        //   far: 100,
-        //   scale: [-1, 1, 1],
-        // }}
         gl={{ preserveDrawingBuffer: true }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.NoToneMapping;
@@ -117,8 +110,6 @@ const AvatarCanvas = ({
         {/* {videoRef.current && <VideoPlane video={videoRef.current} mirrored={mirrored} />} */}
         {/* <FaceMeshMask /> */}
         {/* <OccluderCylinder /> */}
-
-        {/* <StickerRoulette spinning={true} textureNames={stickerFilenames} /> */}
 
         {scene && <primitive object={scene} />}
         {isLoading && (

@@ -397,8 +397,8 @@ const FaceLandmarkCanvas = () => {
   const handleSwitchCamera = async (facing: "user" | "environment") => {
     const mirrored = facing === "user";
     const animationManager = AvatarManager.getInstance();
-    setCameraMode(facing);
     await animationManager.clearScene?.();
+    setCameraMode(facing);
     // if (facing === "user") {
     //   await animationManager.loadModel(
     //     "/models/tiger-hat2.glb",
@@ -472,17 +472,6 @@ const FaceLandmarkCanvas = () => {
                   />
                 )}
                 {/* Avatar 視圖：建議在 AvatarCanvas 裡加 onCanvasReady={(el)=> r3fCanvasRef.current=el} */}
-                {/* <AvatarCanvas
-                  width={videoSize.width}
-                  height={videoSize.height}
-                  // url={modelUrl}
-                  url="/models/tiger-hat2.glb"
-                  // @ts-ignore 若你的 AvatarCanvas 還沒加這個 prop，不影響執行；會走 DOM fallback
-                  onCanvasReady={(el: HTMLCanvasElement) =>
-                    (r3fCanvasRef.current = el)
-                  }
-                /> */}
-
                 {avatarView ? (
                   <AvatarCanvas
                     width={videoSize.width}
