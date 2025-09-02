@@ -34,10 +34,29 @@ class AvatarManager {
   };
 
   startSpin = () => {
+    if (this.isSpinning) return;
+
+    // reset
+    const oldResultSprite = this.hatObject?.getObjectByName("ResultSprite");
+    if (oldResultSprite) {
+      this.hatObject?.remove(oldResultSprite);
+    }
+    // ✅ 重置貼紙樣式（讓全部回來）
+    this.stickerSprites.forEach((sprite) => {
+      const mat = sprite.material as THREE.SpriteMaterial;
+      mat.opacity = 1.0;
+      // sprite.scale.set(0.1, 0.1, 1);
+    });
+    this.hasHighlighted = false;
+    this.selectedStickerIndex = -1;
+    this.rotationOffset = 0;
+
     this.isSpinning = true;
     this.rotationSpeed = 0.2 + Math.random() * 0.2; // 隨機速度
     this.targetRotation =
       this.rotationOffset + Math.PI * 4 + Math.random() * Math.PI * 2; // 多轉幾圈
+    // this.rotationSpeed = 0.2 + 1 * 0.2;
+    // this.targetRotation = this.rotationOffset + 1 * 4 + 1 * Math.PI * 2;
   };
 
   loadModel = async (url?: string, stickerUrls?: string[]) => {
@@ -74,7 +93,8 @@ class AvatarManager {
 
           // ⬇️ 根據圖片實際寬高自動計算貼紙比例
           const imageAspect = texture.image.width / texture.image.height;
-          const baseScale = 0.12; // 你可以視覺上微調這個值
+          // const baseScale = 0.12; // 你可以視覺上微調這個值
+          const baseScale = 0.09; // 你可以視覺上微調這個值
 
           const spriteMaterial = new THREE.SpriteMaterial({
             map: texture,
@@ -223,12 +243,12 @@ class AvatarManager {
       if (
         !this.isSpinning &&
         this.stickerSprites?.length > 0 &&
-        !this.hasHighlighted
+        !this.hasHighlighted &&
+        this.rotationOffset > 0
       ) {
         const total = this.stickerSprites.length;
         const normalizedOffset = this.rotationOffset % (Math.PI * 2);
-        // const targetAngle = 0;
-        const targetAngle = Math.PI; // 正下方
+        const targetAngle = Math.PI; // ✅ 正下方作為選中角度
 
         let closestIndex = 0;
         let smallestDiff = Infinity;
@@ -243,42 +263,42 @@ class AvatarManager {
           }
         }
 
-        // ✅ 先將所有貼紙透明度設為 1
-        // this.stickerSprites.forEach((sprite) => {
-        //   const material = sprite.material as THREE.SpriteMaterial;
-        //   material.opacity = 1.0;
-        //   sprite.scale.set(0.1, 0.1, 1);
-        // });
-
-        //  // ✅ 讓中選的貼紙變亮、變大
-        // const selected = this.stickerSprites[closestIndex];
-        // const selectedMat = selected.material as THREE.SpriteMaterial;
-        // selectedMat.opacity = 1.0;
-        // selected.scale.set(0.15, 0.15, 1);
-
-        // ✅ 選中貼紙視覺變化
+        // ✅ 顯示中選貼紙，其他都隱藏
         this.stickerSprites.forEach((sprite, idx) => {
           const mat = sprite.material as THREE.SpriteMaterial;
           if (idx === closestIndex) {
-            mat.opacity = 1.0;
-            sprite.scale.set(0.15, 0.15, 1);
+            // mat.opacity = 1.0;
+            mat.opacity = 0;
+            // sprite.scale.set(0.18, 0.18, 1); // 放大一點點
           } else {
-            // mat.opacity = 0.3;
-            sprite.scale.set(0.1, 0.1, 1);
+            mat.opacity = 0; // 完全透明（也可選 0.1）
           }
         });
 
         this.hasHighlighted = true;
+        this.selectedStickerIndex = closestIndex;
 
-        // ✅ 1秒後自動恢復所有貼紙外觀
-        setTimeout(() => {
-          this.stickerSprites.forEach((sprite) => {
-            const mat = sprite.material as THREE.SpriteMaterial;
-            mat.opacity = 1.0;
-            sprite.scale.set(0.1, 0.1, 1);
-          });
-          this.hasHighlighted = false;
-        }, 1000);
+        const selectedStickerName = this.stickerUrls[this.selectedStickerIndex];
+        const resultSpriteTexture = new THREE.TextureLoader().load(
+          `/assets/images/stickers/${selectedStickerName}.png`
+        );
+        const resultSpriteMaterial = new THREE.SpriteMaterial({
+          map: resultSpriteTexture,
+          transparent: true,
+        });
+        const resultSprite = new THREE.Sprite(resultSpriteMaterial);
+
+        // ✅ 加進帽子層級，與帽子同步移動
+        if (this.hatObject) {
+          this.hatObject.add(resultSprite);
+        }
+
+        // resultSprite.scale.set(0.05, 0.05, 1);
+        // resultSprite.position.set(0, -0.1, 0.5); // z: 貼在帽子稍前面
+        resultSprite.scale.set(0.15, 0.15, 1);
+        resultSprite.position.set(0, -0.15, 0.1); // z: 貼在帽子稍前面
+        resultSprite.name = "ResultSprite";
+        // this.scene.add(resultSprite);
       }
     }
 
