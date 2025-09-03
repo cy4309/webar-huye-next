@@ -11,6 +11,7 @@ import AvatarManager from "@/classes/AvatarManager";
 import SceneEnvironmentCanvas from "@/components/SceneEnvironmentCanvas";
 import Nav from "@/components/Nav";
 // import { FaArrowsSpin } from "react-icons/fa6";
+import MediaPreviewModal from "@/components/MediaPreviewModal";
 
 function pickMime(): string {
   const cand = [
@@ -47,6 +48,8 @@ const FaceLandmarkCanvas = () => {
   // ===== 合成需要：抓 R3F 與 Landmark 的 canvas（有 onCanvasReady 更穩；否則 fallback DOM 查找） =====
   const r3fCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewType, setPreviewType] = useState<"image" | "video">("image");
 
   // ===== 錄影狀態 =====
   const [isRecording, setIsRecording] = useState(false);
@@ -257,11 +260,13 @@ const FaceLandmarkCanvas = () => {
       out.toBlob((blob) => {
         if (!blob) return;
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `photo_${Date.now()}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
+        setPreviewUrl(url);
+        setPreviewType("image");
+        // const a = document.createElement("a");
+        // a.href = url;
+        // a.download = `photo_${Date.now()}.png`;
+        // a.click();
+        // URL.revokeObjectURL(url);
       }, "image/png");
     } catch (e) {
       console.log(e);
@@ -298,15 +303,16 @@ const FaceLandmarkCanvas = () => {
         }
         ctx.restore();
 
-        const r3f = ensureR3FCanvas();
+        const r3f = ensureR3FCanvas(); // 3D 畫面
         if (r3f) ctx.drawImage(r3f, 0, 0, W, H);
-        const overlay = ensureOverlayCanvas();
+        const overlay = ensureOverlayCanvas(); // UI 或貼圖 overlay
         if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
 
         composeRafRef.current = requestAnimationFrame(draw);
       };
       composeRafRef.current = requestAnimationFrame(draw);
 
+      // 把這個 canvas 當作錄影來源（stream）
       capturedStreamRef.current = composeCanvasRef.current.captureStream(30);
 
       recordedChunksRef.current = [];
@@ -316,9 +322,11 @@ const FaceLandmarkCanvas = () => {
         : new MediaRecorder(capturedStreamRef.current);
       mediaRecorderRef.current = mr;
 
+      // 每段錄影資料推入 chunks
       mr.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) recordedChunksRef.current.push(e.data);
       };
+
       mr.onstop = () => {
         try {
           const type =
@@ -328,13 +336,21 @@ const FaceLandmarkCanvas = () => {
           const isMp4 = /mp4/i.test(type);
           const blob = new Blob(recordedChunksRef.current, { type });
           const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `record_${Date.now()}.${isMp4 ? "mp4" : "webm"}`;
-          a.click();
-          URL.revokeObjectURL(url);
+
+          // ✅ 預覽邏輯：先給使用者預覽（避免 iOS 限制強制下載）
+          setPreviewUrl(url);
+          setPreviewType("video");
+          // ✅ 若想同時自動下載也可開啟這段（多數 Android/桌面會生效）
+          // const a = document.createElement("a");
+          // a.href = url;
+          // a.download = `record_${Date.now()}.${isMp4 ? "mp4" : "webm"}`;
+          // a.click();
+
+          // 清理
+          // URL.revokeObjectURL(url);
           capturedStreamRef.current?.getTracks().forEach((t) => t.stop());
           capturedStreamRef.current = null;
+
           if (composeRafRef.current) {
             cancelAnimationFrame(composeRafRef.current);
             composeRafRef.current = null;
@@ -347,10 +363,12 @@ const FaceLandmarkCanvas = () => {
         }
       };
 
+      // 啟動錄影
       mr.start();
       setIsRecording(true);
       setRecTime(0);
 
+      // 記錄錄影時間
       const start = performance.now();
       const tick = (t: number) => {
         setRecTime(Math.floor((t - start) / 1000));
@@ -499,7 +517,7 @@ const FaceLandmarkCanvas = () => {
           </div>
 
           <button
-            className="absolute z-50 top-8 left-1/2 -translate-x-1/2 px-4 py-4 rounded-full bg-white/60 text-black font-bold"
+            className="absolute top-8 left-1/2 -translate-x-1/2 px-4 py-4 rounded-full bg-white/60 text-black font-bold"
             onClick={() => {
               AvatarManager.getInstance().startSpin();
             }}
@@ -518,6 +536,20 @@ const FaceLandmarkCanvas = () => {
             onToggleCameraFacing={handleToggleCameraFacing}
             onToggleAvatarView={handleToggleAvatarView}
           />
+
+          {previewUrl && (
+            <MediaPreviewModal
+              previewUrl={previewUrl}
+              type={previewType}
+              onClose={() => {
+                if (previewUrl?.startsWith("blob:")) {
+                  URL.revokeObjectURL(previewUrl); // ✅ 關閉預覽時釋放資源
+                }
+                setPreviewUrl(null);
+              }}
+              downloadName={`${Date.now()}`}
+            />
+          )}
         </>
       ) : (
         <SceneEnvironmentCanvas
