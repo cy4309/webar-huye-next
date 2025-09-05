@@ -105,6 +105,11 @@ const FaceLandmarkCanvas = () => {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
+        // try {
+        //   await videoRef.current.play();
+        // } catch (e) {
+        //   console.warn("自動播放失敗，等待使用者互動");
+        // }
       }
       setMirrored(mode === "user");
       setIsCameraReady(true);
@@ -256,6 +261,10 @@ const FaceLandmarkCanvas = () => {
 
       const overlay = ensureOverlayCanvas();
       if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
+
+      // console.log("video:", v.clientWidth, v.clientHeight);
+      // console.log("video res:", v.videoWidth, v.videoHeight);
+      // console.log("r3f canvas:", r3f?.width, r3f?.height);
 
       out.toBlob((blob) => {
         if (!blob) return;

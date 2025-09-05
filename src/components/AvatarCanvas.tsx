@@ -86,11 +86,16 @@ const AvatarCanvas = ({
   if (!width || !height || !url) return null;
 
   return (
-    <div className="absolute" style={{ width: width, height: height }}>
+    <div
+      className="absolute top-0 left-0"
+      style={{ width: width, height: height }}
+    >
       <Canvas
         camera={{ fov: 30, position: [0, 0.5, 1] }}
         gl={{ preserveDrawingBuffer: true }}
         onCreated={({ gl }) => {
+          // gl.setSize(width, height); // 👈 設定 canvas 寬高
+          // gl.setPixelRatio(1); // 👈 保證不被 DPR 放大
           gl.toneMapping = THREE.NoToneMapping;
           gl.outputColorSpace = THREE.LinearSRGBColorSpace;
         }}

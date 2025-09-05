@@ -15,8 +15,13 @@ const isSmallScreen = window.innerWidth < 768;
 const isPhone = isMobile || isSmallScreen;
 
 const ARModel = () => {
-  const { scene } = useGLTF("/models/meals_mk.glb");
-  return <primitive object={scene} scale={0.5} />;
+  const { scene } = useGLTF("/models/huye.glb");
+  return (
+    <group scale={[-1, 1, 1]} rotation={[0, Math.PI + 45, 0]}>
+      {/* <axesHelper args={[0.5]} /> */}
+      <primitive object={scene} />
+    </group>
+  );
 };
 
 const SceneEnvironmentCanvas = ({
@@ -58,7 +63,7 @@ const SceneEnvironmentCanvas = ({
 
   return (
     <>
-      <div className="w-full h-full relative">
+      <div className={`w-full h-full relative`}>
         {/* AR背景始終顯示 */}
         <ARView
           imageTargets="/models/targets.mind"
@@ -88,8 +93,8 @@ const SceneEnvironmentCanvas = ({
           <div className="w-[300px] border absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-center items-center bg-white/50 backdrop-blur-sm p-6 rounded-lg z-20">
             {/* <img className="w-[180px]" src="/assets/images/mk_pizza.png" alt="mk_pizza" /> */}
             <Image
-              src="/assets/images/mk_pizza.png"
-              alt="mk_pizza"
+              src="/assets/images/huye-demo.png"
+              alt="huye_demo"
               width={180}
               height={180} // 可略為保守填一下，幫助 LCP 評估
               className="w-[180px] h-auto"
