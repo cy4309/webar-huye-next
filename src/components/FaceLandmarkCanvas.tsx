@@ -239,44 +239,53 @@ const FaceLandmarkCanvas = () => {
     try {
       const v = videoRef.current;
       if (!v) return;
-      const W = v.videoWidth || v.clientWidth;
-      const H = v.videoHeight || v.clientHeight;
-
-      const out = document.createElement("canvas");
-      out.width = W;
-      out.height = H;
-      const ctx = out.getContext("2d")!;
-
-      ctx.save();
-      if (mirrored) {
-        ctx.scale(-1, 1);
-        ctx.drawImage(v, -W, 0, W, H);
-      } else {
-        ctx.drawImage(v, 0, 0, W, H);
-      }
-      ctx.restore();
 
       const r3f = ensureR3FCanvas();
-      if (r3f) ctx.drawImage(r3f, 0, 0, W, H);
-
       const overlay = ensureOverlayCanvas();
-      if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
 
-      // console.log("video:", v.clientWidth, v.clientHeight);
-      // console.log("video res:", v.videoWidth, v.videoHeight);
-      // console.log("r3f canvas:", r3f?.width, r3f?.height);
+      if (r3f) {
+        const r = r3f.getBoundingClientRect(); // 取 style 寬高
+        const W = r.width;
+        const H = r.height;
+        const videoW = v.videoWidth;
+        const videoH = v.videoHeight;
 
-      out.toBlob((blob) => {
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        setPreviewUrl(url);
-        setPreviewType("image");
-        // const a = document.createElement("a");
-        // a.href = url;
-        // a.download = `photo_${Date.now()}.png`;
-        // a.click();
-        // URL.revokeObjectURL(url);
-      }, "image/png");
+        const out = document.createElement("canvas");
+        out.width = W;
+        out.height = H;
+        const ctx = out.getContext("2d")!;
+
+        const scale = Math.max(W / videoW, H / videoH);
+        const drawW = videoW * scale;
+        const drawH = videoH * scale;
+        const offsetX = (W - drawW) / 2;
+        const offsetY = (H - drawH) / 2;
+
+        ctx.save();
+        if (mirrored) {
+          ctx.scale(-1, 1);
+          ctx.drawImage(v, -drawW - offsetX, offsetY, drawW, drawH);
+        } else {
+          ctx.drawImage(v, offsetX, offsetY, drawW, drawH);
+        }
+        ctx.restore();
+
+        if (r3f) ctx.drawImage(r3f, 0, 0, W, H);
+
+        if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
+
+        out.toBlob((blob) => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          setPreviewUrl(url);
+          setPreviewType("image");
+          // const a = document.createElement("a");
+          // a.href = url;
+          // a.download = `photo_${Date.now()}.png`;
+          // a.click();
+          // URL.revokeObjectURL(url);
+        }, "image/png");
+      }
     } catch (e) {
       console.log(e);
       alert("Failed to take photo.");
@@ -289,32 +298,46 @@ const FaceLandmarkCanvas = () => {
       const v = videoRef.current;
       if (!v) return alert("找不到相機");
 
+      const r3f = ensureR3FCanvas();
+      const overlay = ensureOverlayCanvas();
+      if (!r3f) return alert("找不到 3D 畫布");
+
+      const r = r3f.getBoundingClientRect();
+      const W = r.width;
+      const H = r.height;
+      const videoW = v.videoWidth;
+      const videoH = v.videoHeight;
+
+      // 設定 composite canvas
       composeCanvasRef.current = document.createElement("canvas");
+      composeCanvasRef.current.width = W;
+      composeCanvasRef.current.height = H;
       composeCtxRef.current = composeCanvasRef.current.getContext("2d", {
         alpha: true,
       });
-      const W = v.videoWidth || v.clientWidth;
-      const H = v.videoHeight || v.clientHeight;
-      composeCanvasRef.current.width = W;
-      composeCanvasRef.current.height = H;
 
       const draw = () => {
         if (!composeCtxRef.current) return;
         const ctx = composeCtxRef.current;
 
         ctx.clearRect(0, 0, W, H);
+
+        const scale = Math.max(W / videoW, H / videoH);
+        const drawW = videoW * scale;
+        const drawH = videoH * scale;
+        const offsetX = (W - drawW) / 2;
+        const offsetY = (H - drawH) / 2;
+
         ctx.save();
         if (mirrored) {
           ctx.scale(-1, 1);
-          ctx.drawImage(v, -W, 0, W, H);
+          ctx.drawImage(v, -drawW - offsetX, offsetY, drawW, drawH);
         } else {
-          ctx.drawImage(v, 0, 0, W, H);
+          ctx.drawImage(v, offsetX, offsetY, drawW, drawH);
         }
         ctx.restore();
 
-        const r3f = ensureR3FCanvas(); // 3D 畫面
         if (r3f) ctx.drawImage(r3f, 0, 0, W, H);
-        const overlay = ensureOverlayCanvas(); // UI 或貼圖 overlay
         if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
 
         composeRafRef.current = requestAnimationFrame(draw);
@@ -323,7 +346,6 @@ const FaceLandmarkCanvas = () => {
 
       // 把這個 canvas 當作錄影來源（stream）
       capturedStreamRef.current = composeCanvasRef.current.captureStream(30);
-
       recordedChunksRef.current = [];
       const mime = pickMime();
       const mr = mime
@@ -350,10 +372,10 @@ const FaceLandmarkCanvas = () => {
           setPreviewUrl(url);
           setPreviewType("video");
           // ✅ 若想同時自動下載也可開啟這段（多數 Android/桌面會生效）
-          // const a = document.createElement("a");
-          // a.href = url;
-          // a.download = `record_${Date.now()}.${isMp4 ? "mp4" : "webm"}`;
-          // a.click();
+          //         // const a = document.createElement("a");
+          //         // a.href = url;
+          //         // a.download = `record_${Date.now()}.${isMp4 ? "mp4" : "webm"}`;
+          //         // a.click();
 
           // 清理
           // URL.revokeObjectURL(url);

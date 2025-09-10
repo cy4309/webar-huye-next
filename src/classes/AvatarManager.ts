@@ -24,7 +24,7 @@ class AvatarManager {
   private rotationSpeed = 0.05; // 每幀旋轉速度
   private isSpinning = false;
   private hasHighlighted = false;
-  private occluderMesh?: THREE.Mesh;
+  private occluderMesh: THREE.Mesh;
 
   static getInstance(): AvatarManager {
     return AvatarManager.instance;
@@ -233,18 +233,20 @@ class AvatarManager {
       hat.scale.set(0.9, 0.9, 0.9);
       hat.position.set(
         translation.x * 0.01,
-        translation.y * 0.01 + 0.62, // 頭頂偏移
+        // translation.y * 0.01 + 0.62, // 頭頂偏移
+        translation.y * 0.01 + 0.635, // 頭頂偏移，再上一點
         (translation.z + 50) * 0.02
       );
-      hat.renderOrder = 2;
       hat.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
+        if (
+          child instanceof THREE.Mesh &&
+          child.name !== "HatOccluder" // ✅ 不套用在 occluder 上
+        ) {
           child.material.depthWrite = true;
           child.material.depthTest = true;
           child.material.colorWrite = true;
           child.material.transparent = false;
           child.renderOrder = 2;
-          // child.material.color = "red";
         }
       });
 
@@ -260,46 +262,22 @@ class AvatarManager {
           Math.PI / 2
         );
 
-        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-        const isMacSafari =
-          /Macintosh/.test(navigator.userAgent) &&
-          /Safari/.test(navigator.userAgent) &&
-          !/Chrome/.test(navigator.userAgent);
+        const mat = new THREE.MeshBasicMaterial({
+          color: 0x000000, // 顏色不重要，保險寫個黑色
+          colorWrite: false, // 只寫入深度，不顯示顏色
+          depthWrite: true,
+          depthTest: true,
+          transparent: false, // ✅ 必須關閉，避免 iOS 有 alpha/白色殘留
+          side: THREE.DoubleSide,
+        });
 
-        const useDepthMaterial = isIOS || isMacSafari;
-
-        const mat = useDepthMaterial
-          ? new THREE.MeshBasicMaterial({
-              // for IOS, 使用 MeshDepthMaterial 只寫入深度，不顯示顏色
-              depthPacking: THREE.BasicDepthPacking, // *IOS要加
-              color: 0x000000,
-              colorWrite: false,
-              depthWrite: true,
-              depthTest: true,
-              transparent: true,
-              opacity: 0,
-              side: THREE.DoubleSide,
-            })
-          : new THREE.MeshBasicMaterial({
-              color: 0x000000,
-              colorWrite: false, // 只寫入深度，不顯示顏色
-              depthWrite: true,
-              depthTest: true,
-              transparent: true,
-              opacity: 1,
-              side: THREE.DoubleSide,
-            });
         const occluder = new THREE.Mesh(geo, mat);
+        // console.log(occluder.material);
         occluder.name = "HatOccluder";
         occluder.position.set(0, -0.04, -0.1);
         occluder.renderOrder = -10; // renderOrder 小於帽子
-        hat.add(occluder);
         this.occluderMesh = occluder;
-
-        // ✅ 一幀後隱藏（讓 depth buffer 建立起來）
-        requestAnimationFrame(() => {
-          (occluder.material as THREE.Material).opacity = 0.0;
-        });
+        hat.add(occluder);
       }
     }
 
