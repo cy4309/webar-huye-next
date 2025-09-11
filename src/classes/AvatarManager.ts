@@ -60,7 +60,38 @@ class AvatarManager {
     const gltf = await loadGltf(url);
     // gltf.scene.traverse((obj) => (obj.frustumCulled = false));
     gltf.scene.traverse((obj) => {
-      if (obj.name === "hat") this.hatObject = obj;
+      if (obj.name === "hat") {
+        this.hatObject = obj;
+
+        // #region occluder
+        // ✅ 在載入模型後就建立 occluder
+        if (!this.occluderMesh) {
+          const geo = new THREE.SphereGeometry(
+            0.13,
+            32,
+            16,
+            0,
+            Math.PI * 2,
+            0,
+            Math.PI / 2
+          );
+          const mat = new THREE.MeshBasicMaterial({
+            color: 0x000000, // 顏色不重要，保險寫個黑色
+            colorWrite: false, // 只寫入深度，不顯示顏色
+            depthWrite: true,
+            depthTest: true,
+            transparent: false, // ✅ 必須關閉，避免 iOS 有 alpha/白色殘留
+            side: THREE.DoubleSide,
+          });
+          this.occluderMesh = new THREE.Mesh(geo, mat);
+          // console.log(occluder.material);
+          this.occluderMesh.name = "HatOccluder";
+          this.occluderMesh.position.set(0, -0.04, -0.1);
+          this.occluderMesh.renderOrder = -10; // renderOrder 小於帽子
+
+          this.hatObject.add(this.occluderMesh);
+        }
+      }
     });
     this.scene.add(gltf.scene);
 
@@ -249,36 +280,6 @@ class AvatarManager {
           child.renderOrder = 2;
         }
       });
-
-      // #region occluder
-      if (!this.occluderMesh) {
-        const geo = new THREE.SphereGeometry(
-          0.13,
-          32,
-          16,
-          0,
-          Math.PI * 2,
-          0,
-          Math.PI / 2
-        );
-
-        const mat = new THREE.MeshBasicMaterial({
-          color: 0x000000, // 顏色不重要，保險寫個黑色
-          colorWrite: false, // 只寫入深度，不顯示顏色
-          depthWrite: true,
-          depthTest: true,
-          transparent: false, // ✅ 必須關閉，避免 iOS 有 alpha/白色殘留
-          side: THREE.DoubleSide,
-        });
-
-        const occluder = new THREE.Mesh(geo, mat);
-        // console.log(occluder.material);
-        occluder.name = "HatOccluder";
-        occluder.position.set(0, -0.04, -0.1);
-        occluder.renderOrder = -10; // renderOrder 小於帽子
-        this.occluderMesh = occluder;
-        hat.add(occluder);
-      }
     }
 
     this.scene.getObjectByName("Head")?.quaternion.copy(quaternion);
@@ -296,6 +297,7 @@ class AvatarManager {
     this.stickerSprite = undefined;
     this.stickerSprites = [];
     this.resultSprites = [];
+    this.occluderMesh = undefined;
   };
 }
 
