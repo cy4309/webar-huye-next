@@ -24,6 +24,10 @@ export default function Home() {
           name="keywords"
           content="Mediapie, FaceLandmarker, AR Filter, ReadyPlayerMe, Facial landmarks, tensorflow-js"
         />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+        />
       </Head>
       {/* <h1 className="text-xl md:text-4xl font-bold mb-2 text-shadow text-center">Mediapie FaceLandmarker Demo</h1> */}
       {/* <p className="mt-4 mb-4 text-center px-4 md:text-lg text-sm">Detect the most prominent face from an input image, then estimate 478 3D facial landmarks and 52 facial blendshape scores in real-time.</p> */}
