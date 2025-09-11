@@ -104,12 +104,12 @@ const FaceLandmarkCanvas = () => {
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-        // try {
-        //   await videoRef.current.play();
-        // } catch (e) {
-        //   console.warn("自動播放失敗，等待使用者互動");
-        // }
+        // await videoRef.current.play();
+        try {
+          await videoRef.current.play();
+        } catch (e) {
+          console.warn("自動播放失敗，等待使用者互動");
+        }
       }
       setMirrored(mode === "user");
       setIsCameraReady(true);

@@ -28,6 +28,7 @@ const SceneEnvironmentCanvas = ({
   onToggleCameraFacing,
 }: SceneEnvironmentCanvasProps) => {
   const [found, setFound] = useState(false);
+  const [showNotice, setShowNotice] = useState(false);
   const mvRef = useRef<any>(null);
 
   const handleARButtonClick = async (
@@ -44,7 +45,24 @@ const SceneEnvironmentCanvas = ({
       } else {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         if (isIOS) {
-          window.location.href = "/models/tiger-0902.usdz";
+          // window.open("/models/tiger-0902.usdz", "_blank");
+
+          // window.location.href = "/models/tiger-0902.usdz";
+
+          // const link = document.createElement("a");
+          // link.setAttribute("rel", "ar");
+          // link.setAttribute("href", "/models/tiger-0902.usdz");
+          // link.click();
+
+          // alert("即將開啟模型預覽頁，請關閉預覽後手動回到此頁面繼續操作。");
+          // setTimeout(() => {
+          //   window.open("/models/tiger-0902.usdz", "_blank");
+          // }, 1000);
+          setShowNotice(true); // 顯示通知
+          setTimeout(() => {
+            setShowNotice(false); // 自動隱藏通知
+            window.open("/models/tiger-0902.usdz", "_blank");
+          }, 4000);
         } else {
           const glb = encodeURIComponent(
             new URL("/models/tiger-0902.glb", window.location.href).toString()
@@ -64,6 +82,12 @@ const SceneEnvironmentCanvas = ({
   return (
     <>
       <div className={`w-full h-full relative`}>
+        {showNotice && (
+          <div className="fixed w-full top-5 left-0 text-center text-white bg-black px-4 py-2 rounded shadow-lg z-[9999] animate-fade-in-out">
+            即將開啟模型預覽頁，關閉後請手動回來本頁
+          </div>
+        )}
+
         {/* AR背景始終顯示 */}
         <ARView
           imageTargets="/models/targets.mind"
