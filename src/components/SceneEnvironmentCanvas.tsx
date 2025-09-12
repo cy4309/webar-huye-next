@@ -45,27 +45,27 @@ const SceneEnvironmentCanvas = ({
       } else {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         if (isIOS) {
-          // window.open("/models/tiger-0902.usdz", "_blank");
+          // window.open("/models/t.uz", "_blank");
 
-          // window.location.href = "/models/tiger-0902.usdz";
+          // window.location.href = "/models/t.uz";
 
           // const link = document.createElement("a");
           // link.setAttribute("rel", "ar");
-          // link.setAttribute("href", "/models/tiger-0902.usdz");
+          // link.setAttribute("href", "/models/t.uz");
           // link.click();
 
           // alert("即將開啟模型預覽頁，請關閉預覽後手動回到此頁面繼續操作。");
           // setTimeout(() => {
-          //   window.open("/models/tiger-0902.usdz", "_blank");
+          //   window.open("/models/t.uz", "_blank");
           // }, 1000);
           setShowNotice(true); // 顯示通知
           setTimeout(() => {
             setShowNotice(false); // 自動隱藏通知
-            window.open("/models/tiger-0902.usdz", "_blank");
+            window.open("/models/tiger-0912.usdz", "_blank");
           }, 4000);
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/tiger-0902.glb", window.location.href).toString()
+            new URL("/models/tiger-0912.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -136,8 +136,8 @@ const SceneEnvironmentCanvas = ({
           <>
             <model-viewer
               ref={mvRef}
-              ios-src="/models/tiger-0902.usdz"
-              src="/models/tiger-0902.glb"
+              ios-src="/models/tiger-0912.usdz"
+              src="/models/tiger-0912.glb"
               ar
               ar-modes="scene-viewer webxr quick-look"
               camera-controls
