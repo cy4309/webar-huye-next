@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { ARAnchor, ARView } from "react-three-mind";
 //@ts-ignore
 import { ambientLight, pointLight } from "@react-three/fiber";
@@ -20,10 +20,7 @@ const isPhone = isMobile || isSmallScreen;
 const ARModel = ({ groupRef }: { groupRef: React.RefObject<Group> }) => {
   const { scene: rawScene } = useGLTF("/models/huye.glb");
 
-  const clonedScene = useMemo(() => {
-    const cloned = clone(rawScene);
-    return cloned;
-  }, [rawScene]);
+  const clonedScene = useMemo(() => clone(rawScene), [rawScene]);
 
   return (
     <group
@@ -45,14 +42,6 @@ const SceneEnvironmentCanvas = ({
   const [showNotice, setShowNotice] = useState(false);
   const mvRef = useRef<any>(null);
   const modelGroupRef = useRef<THREE.Group>(null);
-
-  const handleAnchorLost = () => {
-    setFound(false);
-    // 清除模型（防止殘留）
-    if (modelGroupRef.current) {
-      modelGroupRef.current.clear();
-    }
-  };
 
   const handleARButtonClick = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -129,8 +118,7 @@ const SceneEnvironmentCanvas = ({
           <ARAnchor
             target={0}
             onAnchorFound={() => setFound(true)}
-            // onAnchorLost={() => setFound(false)}
-            onAnchorLost={handleAnchorLost}
+            onAnchorLost={() => setFound(false)}
           >
             <ARModel groupRef={modelGroupRef} />
           </ARAnchor>
