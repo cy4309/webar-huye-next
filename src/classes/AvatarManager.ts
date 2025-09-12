@@ -117,6 +117,7 @@ class AvatarManager {
         });
         const sprite = new THREE.Sprite(mat);
         sprite.scale.set(scale * aspect, scale, 1);
+        sprite.visible = false; // ✅ 預設不顯示貼紙
 
         const angle = (i / stickerUrls.length) * Math.PI * 2;
         const x = Math.sin(angle) * radius;
@@ -133,7 +134,7 @@ class AvatarManager {
         });
         const resultSprite = new THREE.Sprite(resultMat);
         resultSprite.scale.set(0.15, 0.15, 1);
-        resultSprite.position.set(0, -0.15, 0.1);
+        resultSprite.position.set(0, -0.17, 0.1);
         resultSprite.visible = false;
         resultSprite.name = `ResultSprite_${i}`;
         this.hatObject?.add(resultSprite);
@@ -229,6 +230,11 @@ class AvatarManager {
         const z = centerZ + radius;
         sprite.position.set(x, y, z);
         sprite.lookAt(centerX, y, centerZ + 1); // 每張貼紙保持面向圓心
+      });
+
+      // ✅ 初次偵測到臉後，才讓貼紙顯示
+      this.stickerSprites.forEach((sprite) => {
+        if (!sprite.visible) sprite.visible = true;
       });
 
       if (!this.isSpinning && !this.hasHighlighted && this.rotationOffset > 0) {

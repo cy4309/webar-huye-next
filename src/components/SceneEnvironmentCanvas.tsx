@@ -61,7 +61,7 @@ const SceneEnvironmentCanvas = ({
           setShowNotice(true); // 顯示通知
           setTimeout(() => {
             setShowNotice(false); // 自動隱藏通知
-            window.open("/models/tiger-0912.usdz", "_blank");
+            window.open("/models/tiger-0911.usdz", "_blank");
           }, 4000);
         } else {
           const glb = encodeURIComponent(
@@ -136,7 +136,7 @@ const SceneEnvironmentCanvas = ({
           <>
             <model-viewer
               ref={mvRef}
-              ios-src="/models/tiger-0912.usdz"
+              ios-src="/models/tiger-0911.usdz"
               src="/models/tiger-0912.glb"
               ar
               ar-modes="scene-viewer webxr quick-look"
