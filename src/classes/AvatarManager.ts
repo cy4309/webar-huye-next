@@ -133,7 +133,9 @@ class AvatarManager {
           transparent: true,
         });
         const resultSprite = new THREE.Sprite(resultMat);
-        resultSprite.scale.set(0.15, 0.15, 1);
+        const resultAspect = texture.image.width / texture.image.height;
+        const resultScale = 0.15;
+        resultSprite.scale.set(resultScale * resultAspect, resultScale, 1); // 高度固定，寬度依照圖片aspect變化
         resultSprite.position.set(0, -0.17, 0.1);
         resultSprite.visible = false;
         resultSprite.name = `ResultSprite_${i}`;
