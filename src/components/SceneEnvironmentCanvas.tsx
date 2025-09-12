@@ -1,8 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { ARAnchor, ARView } from "react-three-mind";
 //@ts-ignore
 import { ambientLight, pointLight } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
+import { clone } from "three/examples/jsm/utils/SkeletonUtils";
+import { Group } from "three";
+import * as THREE from "three";
 import Nav from "@/components/Nav";
 import Image from "next/image";
 
@@ -11,15 +14,26 @@ interface SceneEnvironmentCanvasProps {
 }
 
 const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
-const isSmallScreen = window.innerWidth < 768;
+const isSmallScreen = typeof window !== "undefined" && window.innerWidth < 768;
 const isPhone = isMobile || isSmallScreen;
 
-const ARModel = () => {
-  const { scene } = useGLTF("/models/huye.glb");
+const ARModel = ({ groupRef }: { groupRef: React.RefObject<Group> }) => {
+  const { scene: rawScene } = useGLTF("/models/huye.glb");
+
+  const clonedScene = useMemo(() => {
+    const cloned = clone(rawScene);
+    return cloned;
+  }, [rawScene]);
+
   return (
-    <group scale={[-1, 1, 1]} rotation={[0, Math.PI + 45, 0]}>
+    <group
+      ref={groupRef}
+      scale={[-1, 1, 1]}
+      rotation={[0, Math.PI + 45, 0]}
+      dispose={null}
+    >
       {/* <axesHelper args={[0.5]} /> */}
-      <primitive object={scene} />
+      <primitive object={clonedScene} />
     </group>
   );
 };
@@ -30,6 +44,15 @@ const SceneEnvironmentCanvas = ({
   const [found, setFound] = useState(false);
   const [showNotice, setShowNotice] = useState(false);
   const mvRef = useRef<any>(null);
+  const modelGroupRef = useRef<THREE.Group>(null);
+
+  const handleAnchorLost = () => {
+    setFound(false);
+    // 清除模型（防止殘留）
+    if (modelGroupRef.current) {
+      modelGroupRef.current.clear();
+    }
+  };
 
   const handleARButtonClick = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -58,10 +81,10 @@ const SceneEnvironmentCanvas = ({
           // setTimeout(() => {
           //   window.open("/models/t.uz", "_blank");
           // }, 1000);
-          setShowNotice(true); // 顯示通知
+          setShowNotice(true);
           setTimeout(() => {
-            setShowNotice(false); // 自動隱藏通知
-            window.open("/models/tiger-0911.usdz", "_blank");
+            setShowNotice(false);
+            window.open("/models/tiger-0912.usdz", "_blank");
           }, 4000);
         } else {
           const glb = encodeURIComponent(
@@ -91,19 +114,25 @@ const SceneEnvironmentCanvas = ({
         {/* AR背景始終顯示 */}
         <ARView
           imageTargets="/models/targets.mind"
-          filterMinCF={1}
-          filterBeta={10000}
-          missTolerance={0}
+          // filterMinCF={1}
+          // filterBeta={10000}
+          filterMinCF={0.001} // 降低信心值門檻
+          filterBeta={0.009} // 平滑程度建議調成比較小的數值
+          missTolerance={5}
           warmupTolerance={0}
+          uiError={false}
+          uiLoading={false}
+          uiScanning={false}
         >
           <ambientLight />
           <pointLight position={[10, 10, 10]} />
           <ARAnchor
             target={0}
             onAnchorFound={() => setFound(true)}
-            onAnchorLost={() => setFound(false)}
+            // onAnchorLost={() => setFound(false)}
+            onAnchorLost={handleAnchorLost}
           >
-            <ARModel />
+            <ARModel groupRef={modelGroupRef} />
           </ARAnchor>
         </ARView>
 
@@ -115,7 +144,6 @@ const SceneEnvironmentCanvas = ({
         {/* 提示畫面（只在未找到 target 時顯示） */}
         {!found && (
           <div className="w-[300px] border absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-center items-center bg-white/50 backdrop-blur-sm p-6 rounded-lg z-20">
-            {/* <img className="w-[180px]" src="/assets/images/mk_pizza.png" alt="mk_pizza" /> */}
             <Image
               src="/assets/images/huye-demo.png"
               alt="huye_demo"
@@ -136,7 +164,7 @@ const SceneEnvironmentCanvas = ({
           <>
             <model-viewer
               ref={mvRef}
-              ios-src="/models/tiger-0911.usdz"
+              ios-src="/models/tiger-0912.usdz"
               src="/models/tiger-0912.glb"
               ar
               ar-modes="scene-viewer webxr quick-look"
