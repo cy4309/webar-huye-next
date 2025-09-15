@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo } from "react";
 import { ARAnchor, ARView } from "react-three-mind";
 //@ts-ignore
 import { ambientLight, pointLight } from "@react-three/fiber";
@@ -109,9 +109,9 @@ const SceneEnvironmentCanvas = ({
           filterBeta={0.009} // 平滑程度建議調成比較小的數值
           missTolerance={5}
           warmupTolerance={0}
-          uiError={false}
-          uiLoading={false}
-          uiScanning={false}
+          // uiError={false}
+          // uiLoading={false}
+          // uiScanning={false}
         >
           <ambientLight />
           <pointLight position={[10, 10, 10]} />

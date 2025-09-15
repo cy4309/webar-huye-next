@@ -12,6 +12,7 @@ import SceneEnvironmentCanvas from "@/components/SceneEnvironmentCanvas";
 import Nav from "@/components/Nav";
 // import { FaArrowsSpin } from "react-icons/fa6";
 import MediaPreviewModal from "@/components/MediaPreviewModal";
+import Image from "next/image";
 
 function pickMime(): string {
   const cand = [
@@ -44,6 +45,7 @@ const FaceLandmarkCanvas = () => {
   const [facing, setFacing] = useState<"user" | "environment">("user");
   const [mirrored, setMirrored] = useState(true);
   const [cameraMode, setCameraMode] = useState<"user" | "environment">("user");
+  // const [isPortrait, setIsPortrait] = useState(true);
 
   // ===== 合成需要：抓 R3F 與 Landmark 的 canvas（有 onCanvasReady 更穩；否則 fallback DOM 查找） =====
   const r3fCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -180,6 +182,15 @@ const FaceLandmarkCanvas = () => {
       });
     }
   }, [isCameraReady]);
+
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     setIsPortrait(window.innerHeight >= window.innerWidth);
+  //   };
+  //   handleResize();
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, []);
 
   const handleToggleAvatarView = () => setAvatarView((prev) => !prev);
   const toggleAvatarCreatorView = () => setShowAvatarCreator((prev) => !prev);
@@ -490,7 +501,19 @@ const FaceLandmarkCanvas = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center">
+    <div className="w-full h-full relative flex flex-col items-center">
+      {/* ✅ 邊框 PNG，會蓋在最上層，直式手機比例9:16(720*1280)，橫式電腦螢幕比例16:9(1920*1080) */}
+      {/* <Image
+        src={
+          isPortrait
+            ? "/assets/images/frame-portrait.png"
+            : "/assets/images/frame-landscape.png"
+        }
+        alt="AR Frame"
+        className="absolute inset-0 z-[9999] pointer-events-none"
+        fill
+      /> */}
+
       {cameraMode === "user" ? (
         <>
           <div className="w-full h-full flex justify-center items-center">
