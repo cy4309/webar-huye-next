@@ -46,6 +46,28 @@ const FaceLandmarkCanvas = () => {
   const [mirrored, setMirrored] = useState(true);
   const [cameraMode, setCameraMode] = useState<"user" | "environment">("user");
   // const [isPortrait, setIsPortrait] = useState(true);
+  const frames = [
+    {
+      src: "/assets/images/frame1.png",
+      alt: "Frame1",
+      className: "top-0 left-0",
+    },
+    {
+      src: "/assets/images/frame2.png",
+      alt: "Frame2",
+      className: "top-0 right-0",
+    },
+    {
+      src: "/assets/images/frame3.png",
+      alt: "Frame3",
+      className: "bottom-0 left-0",
+    },
+    {
+      src: "/assets/images/frame4.png",
+      alt: "Frame4",
+      className: "bottom-0 right-0",
+    },
+  ];
 
   // ===== 合成需要：抓 R3F 與 Landmark 的 canvas（有 onCanvasReady 更穩；否則 fallback DOM 查找） =====
   const r3fCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -513,6 +535,21 @@ const FaceLandmarkCanvas = () => {
         className="absolute inset-0 z-[9999] pointer-events-none"
         fill
       /> */}
+
+      {frames.map((frame, i) => (
+        <Image
+          key={i}
+          src={frame.src}
+          alt={frame.alt}
+          width={200}
+          height={200}
+          priority={i === 0} // 只有第一個加 priority
+          className={`
+            absolute z-[9999] pointer-events-none ${frame.className}
+            w-[60px] sm:w-[100px] md:w-[150px] lg:w-[200px]
+          `}
+        />
+      ))}
 
       {cameraMode === "user" ? (
         <>

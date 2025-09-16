@@ -52,8 +52,27 @@ const SceneEnvironmentCanvas = ({
     if (!mv) return;
 
     try {
+      // model-viewer cdn
       if (mv.canActivateAR) {
-        await mv.activateAR(); // 原生 AR viewer
+        // await mv.activateAR(); // 原生 AR viewer
+
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (isIOS) {
+          setShowNotice(true);
+          setTimeout(() => {
+            setShowNotice(false);
+            window.open("/models/0916t10.usdz", "_blank");
+          }, 4000);
+        } else {
+          const glb = encodeURIComponent(
+            new URL("/models/tiger-0912.glb", window.location.href).toString()
+          );
+          const fallback = encodeURIComponent(window.location.href);
+          window.location.href =
+            `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
+            `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
+            `S.browser_fallback_url=${fallback};end;`;
+        }
       } else {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         if (isIOS) {
@@ -73,7 +92,7 @@ const SceneEnvironmentCanvas = ({
           setShowNotice(true);
           setTimeout(() => {
             setShowNotice(false);
-            window.open("/models/tiger-0912.usdz", "_blank");
+            window.open("/models/0916t10.usdz", "_blank");
           }, 4000);
         } else {
           const glb = encodeURIComponent(
@@ -152,7 +171,7 @@ const SceneEnvironmentCanvas = ({
           <>
             <model-viewer
               ref={mvRef}
-              ios-src="/models/tiger-0912.usdz"
+              ios-src="/models/0916t10.usdz"
               src="/models/tiger-0912.glb"
               ar
               ar-modes="scene-viewer webxr quick-look"
