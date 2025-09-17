@@ -65,7 +65,7 @@ const SceneEnvironmentCanvas = ({
           }, 4000);
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/tiger-0912.glb", window.location.href).toString()
+            new URL("/models/0916t10.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -96,7 +96,7 @@ const SceneEnvironmentCanvas = ({
           }, 4000);
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/tiger-0912.glb", window.location.href).toString()
+            new URL("/models/0916t10.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -172,7 +172,7 @@ const SceneEnvironmentCanvas = ({
             <model-viewer
               ref={mvRef}
               ios-src="/models/0916t10.usdz"
-              src="/models/tiger-0912.glb"
+              src="/models/0916t10.glb"
               ar
               ar-modes="scene-viewer webxr quick-look"
               camera-controls
