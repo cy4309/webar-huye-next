@@ -6,7 +6,7 @@ import { useGLTF } from "@react-three/drei";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils";
 import { Group } from "three";
 import * as THREE from "three";
-import Nav from "@/components/Nav";
+import NavCameraFacing from "@/components/NavCameraFacing";
 import Image from "next/image";
 
 interface SceneEnvironmentCanvasProps {
@@ -112,7 +112,7 @@ const SceneEnvironmentCanvas = ({
 
   return (
     <>
-      <div className={`w-full h-full relative`}>
+      <div className="w-full h-full relative flex flex-col items-center">
         {showNotice && (
           <div className="fixed w-full top-5 left-0 text-center text-white bg-black px-4 py-2 rounded shadow-lg z-[9999] animate-fade-in-out">
             即將開啟模型預覽頁，關閉後請手動回來本頁
@@ -144,15 +144,16 @@ const SceneEnvironmentCanvas = ({
         </ARView>
 
         {/* Nav始終顯示 */}
-        <div className="w-full absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-          <Nav onToggleCameraFacing={onToggleCameraFacing} />
-        </div>
+        {/* <div className="w-full absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"> */}
+        {/* <div className="w-full h-full relative flex flex-col items-center"> */}
+        <NavCameraFacing onToggleCameraFacing={onToggleCameraFacing} />
+        {/* </div> */}
 
         {/* 提示畫面（只在未找到 target 時顯示） */}
         {!found && (
           <div className="w-[300px] border absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-center items-center bg-white/50 backdrop-blur-sm p-6 rounded-lg z-20">
             <Image
-              src="/assets/images/huye-demo.png"
+              src="/assets/images/back_plane_a_tiger.png"
               alt="huye_demo"
               width={180}
               height={180} // 可略為保守填一下，幫助 LCP 評估

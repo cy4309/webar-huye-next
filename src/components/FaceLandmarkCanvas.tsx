@@ -10,6 +10,7 @@ import ReadyPlayerCreator from "@/components/ReadyPlayerCreator";
 import AvatarManager from "@/classes/AvatarManager";
 import SceneEnvironmentCanvas from "@/components/SceneEnvironmentCanvas";
 import Nav from "@/components/Nav";
+import NavCameraFacing from "@/components/NavCameraFacing";
 // import { FaArrowsSpin } from "react-icons/fa6";
 import MediaPreviewModal from "@/components/MediaPreviewModal";
 import Image from "next/image";
@@ -45,27 +46,30 @@ const FaceLandmarkCanvas = () => {
   const [facing, setFacing] = useState<"user" | "environment">("user");
   const [mirrored, setMirrored] = useState(true);
   const [cameraMode, setCameraMode] = useState<"user" | "environment">("user");
+  // const [facing, setFacing] = useState<"user" | "environment">("environment");
+  // const [mirrored, setMirrored] = useState(false);
+  // const [cameraMode, setCameraMode] = useState<"user" | "environment">(
+  //   "environment"
+  // );
+
   // const [isPortrait, setIsPortrait] = useState(true);
   const frames = [
     {
-      src: "/assets/images/frame1.png",
-      alt: "Frame1",
-      className: "top-0 left-0",
+      src: "/assets/images/front_frame_top.png",
+      alt: "front_frame_top",
+      className: "top-0 left-1/2 -translate-x-1/2 w-full max-w-[480px]",
     },
     {
-      src: "/assets/images/frame2.png",
-      alt: "Frame2",
-      className: "top-0 right-0",
+      src: "/assets/images/front_frame_left.png",
+      alt: "front_frame_left",
+      className: "bottom-0 left-0 w-[350px]",
     },
     {
-      src: "/assets/images/frame3.png",
-      alt: "Frame3",
-      className: "bottom-0 left-0",
-    },
-    {
-      src: "/assets/images/frame4.png",
-      alt: "Frame4",
-      className: "bottom-0 right-0",
+      src: "/assets/images/front_frame_right.png",
+      alt: "front_frame_right",
+      className: "bottom-0 right-0 w-[150px]",
+      // className:
+      //   "bottom-0 right-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px]",
     },
   ];
 
@@ -523,36 +527,35 @@ const FaceLandmarkCanvas = () => {
   };
 
   return (
-    <div className="w-full h-full relative flex flex-col items-center">
-      {/* ✅ 邊框 PNG，會蓋在最上層，直式手機比例9:16(720*1280)，橫式電腦螢幕比例16:9(1920*1080) */}
-      {/* <Image
-        src={
-          isPortrait
-            ? "/assets/images/frame-portrait.png"
-            : "/assets/images/frame-landscape.png"
-        }
-        alt="AR Frame"
-        className="absolute inset-0 z-[9999] pointer-events-none"
-        fill
-      /> */}
-
-      {frames.map((frame, i) => (
-        <Image
-          key={i}
-          src={frame.src}
-          alt={frame.alt}
-          width={200}
-          height={200}
-          priority={i === 0} // 只有第一個加 priority
-          className={`
-            absolute z-[9999] pointer-events-none ${frame.className}
-            w-[60px] sm:w-[100px] md:w-[150px] lg:w-[200px]
-          `}
-        />
-      ))}
-
+    <>
       {cameraMode === "user" ? (
-        <>
+        <div className="w-full h-full relative flex flex-col items-center">
+          {/* ✅ 邊框 PNG，會蓋在最上層，直式手機比例9:16(720*1280)，橫式電腦螢幕比例16:9(1920*1080) */}
+          {/* <Image
+            src={
+              isPortrait
+                ? "/assets/images/frame-portrait.png"
+                : "/assets/images/frame-landscape.png"
+            }
+            alt="AR Frame"
+            className="absolute inset-0 z-[9999] pointer-events-none"
+            fill
+          /> */}
+
+          {frames.map((frame, i) => (
+            <Image
+              key={i}
+              src={frame.src}
+              alt={frame.alt}
+              width={300}
+              height={300}
+              priority={i === 0} // 只有第一個加 priority
+              className={`
+                absolute z-[1000] pointer-events-none object-contain ${frame.className}
+                `}
+              // w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px]
+            />
+          ))}
           <div className="w-full h-full flex justify-center items-center">
             <video
               className={`w-full h-full object-cover ${
@@ -608,7 +611,7 @@ const FaceLandmarkCanvas = () => {
           </div>
 
           <button
-            className="absolute top-8 left-1/2 -translate-x-1/2 px-4 py-4 rounded-full bg-white/60 text-black font-bold"
+            className="absolute top-60 left-1/2 -translate-x-1/2 px-4 py-4 rounded-full bg-white/60 text-black font-bold"
             onClick={() => {
               AvatarManager.getInstance().startSpin();
             }}
@@ -617,6 +620,8 @@ const FaceLandmarkCanvas = () => {
             點擊開始
           </button>
 
+          <NavCameraFacing onToggleCameraFacing={handleToggleCameraFacing} />
+
           {/* iOS 相機風底部工具列 */}
           <Nav
             avatarView={avatarView}
@@ -624,7 +629,7 @@ const FaceLandmarkCanvas = () => {
             recTime={fmt(recTime)}
             onShootPhoto={handleShootPhoto}
             onToggleRecord={handleToggleRecord}
-            onToggleCameraFacing={handleToggleCameraFacing}
+            // onToggleCameraFacing={handleToggleCameraFacing}
             onToggleAvatarView={handleToggleAvatarView}
           />
 
@@ -641,13 +646,13 @@ const FaceLandmarkCanvas = () => {
               downloadName={`${Date.now()}`}
             />
           )}
-        </>
+        </div>
       ) : (
         <SceneEnvironmentCanvas
           onToggleCameraFacing={handleToggleCameraFacing}
         />
       )}
-    </div>
+    </>
   );
 };
 

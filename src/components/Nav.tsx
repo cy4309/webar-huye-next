@@ -1,6 +1,6 @@
 import { IoMdCamera } from "react-icons/io";
 import { AiFillVideoCamera } from "react-icons/ai";
-import { LuRefreshCw } from "react-icons/lu";
+// import { LuRefreshCw } from "react-icons/lu";
 
 interface NavProps {
   avatarView?: boolean;
@@ -8,7 +8,7 @@ interface NavProps {
   recTime?: string;
   onShootPhoto?: () => void;
   onToggleRecord?: () => void;
-  onToggleCameraFacing: () => void;
+  // onToggleCameraFacing: () => void;
   onToggleAvatarView?: () => void;
 }
 
@@ -18,15 +18,15 @@ export default function Nav({
   recTime,
   onShootPhoto,
   onToggleRecord,
-  onToggleCameraFacing,
+  // onToggleCameraFacing,
   onToggleAvatarView,
 }: NavProps) {
-  if (!onToggleCameraFacing) return null;
+  // if (!onToggleCameraFacing) return null;
 
   return (
     <>
-      <nav className="w-full relative">
-        <div className="w-full pb-8 absolute bottom-0 left-0 right-0 flex justify-center">
+      <nav className="w-full relative z-[9999]">
+        <div className="w-full absolute bottom-8 left-0 right-0 flex justify-center">
           <div className="gap-8 px-6 py-3 flex justify-center items-center rounded-full bg-black/40 backdrop-blur-md border border-white/10">
             {/* 模式切換 */}
             {/* {onToggleAvatarView && (
@@ -71,19 +71,18 @@ export default function Nav({
             )}
 
             {/* 前/後鏡頭切換 */}
-            {onToggleCameraFacing && (
+            {/* {onToggleCameraFacing && (
               <button
                 // className="!rounded-full"
                 className="relative w-16 h-16 rounded-full"
                 aria-label="SwitchCamera"
                 onClick={onToggleCameraFacing}
               >
-                {/* <LuRefreshCw className="text-white/90" /> */}
                 <span className="absolute inset-0 rounded-full border-4 border-white/90"></span>
                 <span className="absolute inset-1.5 rounded-full bg-white/90"></span>
                 <LuRefreshCw className="absolute inset-0 m-auto text-black text-2xl" />
               </button>
-            )}
+            )} */}
           </div>
 
           {/* 錄影計時 */}
