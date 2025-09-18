@@ -33,7 +33,7 @@ class AvatarManager {
   getScene = () => this.scene;
 
   startSpin = () => {
-    if (this.isSpinning) return;
+    if (this.isSpinning) return Promise.resolve();
 
     // ✅ 重置貼紙樣式（讓全部回來）
     this.resultSprites.forEach((sprite) => (sprite.visible = false));
@@ -50,6 +50,15 @@ class AvatarManager {
     this.rotationSpeed = 0.2 + Math.random() * 0.2;
     this.targetRotation =
       this.rotationOffset + Math.PI * 4 + Math.random() * Math.PI * 2;
+
+    // ✅ 等動畫跑完再呼叫 callback
+    const duration = 8000; // 根據你動畫結束的時間調整
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        this.isSpinning = false;
+        resolve();
+      }, duration);
+    });
   };
 
   loadModel = async (url?: string, stickerUrls?: string[]) => {

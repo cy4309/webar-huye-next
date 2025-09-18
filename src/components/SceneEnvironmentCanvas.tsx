@@ -151,19 +151,47 @@ const SceneEnvironmentCanvas = ({
 
         {/* 提示畫面（只在未找到 target 時顯示） */}
         {!found && (
-          <div className="w-[300px] border absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-center items-center bg-white/50 backdrop-blur-sm p-6 rounded-lg z-20">
+          <div className="bg-[url(/assets/images/back_plane.png)] w-[300px] h-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
             <Image
               src="/assets/images/back_plane_a_tiger.png"
               alt="huye_demo"
+              className="w-[180px] h-auto mt-6"
               width={180}
               height={180} // 可略為保守填一下，幫助 LCP 評估
-              className="w-[180px] h-auto"
             />
-            <p className="font-bold mt-4">請將相機對準此圖標</p>
+
+            {/* 第一步字圖：請將鏡頭與圖標保持平行 */}
+            <Image
+              src="/assets/images/back_plane_wording_step2.png"
+              alt="Step 2"
+              width={260}
+              height={50}
+              className="mt-4"
+            />
+
+            {/* 第二步字圖：請將相機對準圖標 */}
+            <Image
+              src="/assets/images/back_plane_wording_step1.png"
+              alt="Step 1"
+              width={260}
+              height={50}
+              className="mt-1"
+            />
+
+            {/* 啟動 AR 按鈕圖 */}
+            <button className="mt-4">
+              <Image
+                src="/assets/images/btn_play_ar.png"
+                alt="Start AR"
+                width={140}
+                height={140}
+              />
+            </button>
+            {/* <p className="font-bold mt-4">請將相機對準此圖標</p>
             <p className="text-center">
               為了獲得最佳的 AR 體驗
               <br /> 請將相機鏡頭與現場的辨識圖標保持平行
-            </p>
+            </p> */}
           </div>
         )}
 

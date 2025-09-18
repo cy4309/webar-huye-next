@@ -34,7 +34,7 @@ const MediaPreviewModal: React.FC<MediaPreviewModalProps> = ({
 
   return (
     <div
-      className="w-full h-[100dvh] fixed inset-0 z-50 bg-black/80 flex flex-col justify-center items-center"
+      className="w-full h-[100dvh] fixed inset-0 bg-black/80 flex flex-col justify-center items-center z-[9999]"
       onClick={onClose}
     >
       {/* 預覽標題區 */}

@@ -14,6 +14,13 @@ import NavCameraFacing from "@/components/NavCameraFacing";
 // import { FaArrowsSpin } from "react-icons/fa6";
 import MediaPreviewModal from "@/components/MediaPreviewModal";
 import Image from "next/image";
+import imgBtnPlaySpin from "/public/assets/images/btn_play_spin.png";
+import imgFrontFrameBotMid from "/public/assets/images/front_frame_bot_mid.png";
+import imgFrontFrameBotRight from "/public/assets/images/front_frame_bot_right.png";
+import imgFrontFrameBotLeft from "/public/assets/images/front_frame_bot_left.png";
+import imgFrontFrameTopLeft from "/public/assets/images/front_frame_top_left.png";
+import imgFrontFrameTopRight from "/public/assets/images/front_frame_top_right.png";
+import imgFrontFrameTopMid from "/public/assets/images/front_frame_top_mid.png";
 
 function pickMime(): string {
   const cand = [
@@ -46,30 +53,55 @@ const FaceLandmarkCanvas = () => {
   const [facing, setFacing] = useState<"user" | "environment">("user");
   const [mirrored, setMirrored] = useState(true);
   const [cameraMode, setCameraMode] = useState<"user" | "environment">("user");
+  const [isSpinning, setIsSpinning] = useState(false);
   // const [facing, setFacing] = useState<"user" | "environment">("environment");
   // const [mirrored, setMirrored] = useState(false);
   // const [cameraMode, setCameraMode] = useState<"user" | "environment">(
   //   "environment"
   // );
-
   // const [isPortrait, setIsPortrait] = useState(true);
+
   const frames = [
+    // bottom
     {
-      src: "/assets/images/front_frame_top.png",
-      alt: "front_frame_top",
+      src: imgFrontFrameBotMid,
+      alt: "imgFrontFrameBotMid",
+      className:
+        "bottom-0 left-1/3 -translate-x-1/2 w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] 2xl:w-[650px]",
+    },
+    {
+      src: imgFrontFrameBotMid,
+      alt: "imgFrontFrameBotMid",
+      className:
+        "bottom-0 left-2/3 -translate-x-1/2 w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] 2xl:w-[650px]",
+    },
+    {
+      src: imgFrontFrameBotRight,
+      alt: "imgFrontFrameBotRight",
+      className:
+        "bottom-0 right-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px] xl:w-[350px] 2xl:w-[400px]",
+    },
+    {
+      src: imgFrontFrameBotLeft,
+      alt: "imgFrontFrameBotLeft",
+      className:
+        "bottom-0 left-0 w-[350px] sm:w-[450px] md:w-[550px] lg:w-[650px] xl:w-[750px] 2xl:w-[850px]",
+    },
+    // top
+    {
+      src: imgFrontFrameTopLeft,
+      alt: "imgFrontFrameTopLeft",
+      className: "top-0 left-0 w-full max-w-[150px]",
+    },
+    {
+      src: imgFrontFrameTopRight,
+      alt: "imgFrontFrameTopRight",
+      className: "top-0 right-0 w-full max-w-[150px]",
+    },
+    {
+      src: imgFrontFrameTopMid,
+      alt: "imgFrontFrameTopMid",
       className: "top-0 left-1/2 -translate-x-1/2 w-full max-w-[480px]",
-    },
-    {
-      src: "/assets/images/front_frame_left.png",
-      alt: "front_frame_left",
-      className: "bottom-0 left-0 w-[350px]",
-    },
-    {
-      src: "/assets/images/front_frame_right.png",
-      alt: "front_frame_right",
-      className: "bottom-0 right-0 w-[150px]",
-      // className:
-      //   "bottom-0 right-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px]",
     },
   ];
 
@@ -526,6 +558,12 @@ const FaceLandmarkCanvas = () => {
     });
   };
 
+  const handleSpin = async () => {
+    setIsSpinning(true);
+    await AvatarManager.getInstance().startSpin();
+    setIsSpinning(false);
+  };
+
   return (
     <>
       {cameraMode === "user" ? (
@@ -610,15 +648,22 @@ const FaceLandmarkCanvas = () => {
             )}
           </div>
 
-          <button
-            className="absolute top-60 left-1/2 -translate-x-1/2 px-4 py-4 rounded-full bg-white/60 text-black font-bold"
-            onClick={() => {
-              AvatarManager.getInstance().startSpin();
-            }}
-          >
-            {/* <FaArrowsSpin /> */}
-            點擊開始
-          </button>
+          {!isSpinning && (
+            <button
+              className="absolute bottom-32 left-1/2 -translate-x-1/2 z-[9999]"
+              // onClick={() => {
+              //   AvatarManager.getInstance().startSpin();
+              // }}
+              onClick={handleSpin}
+            >
+              <Image
+                src={imgBtnPlaySpin}
+                alt="imgBtnPlaySpin"
+                width={150}
+                height={150}
+              />
+            </button>
+          )}
 
           <NavCameraFacing onToggleCameraFacing={handleToggleCameraFacing} />
 
