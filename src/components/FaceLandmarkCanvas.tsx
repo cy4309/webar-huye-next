@@ -2,7 +2,7 @@
 /** @description 確認好R3F Canvas 在相機 metadata 尚未完整時提早 render，會導致整體掛掉。 */
 /** @description 包含整體邏輯的容器元件：開啟攝影機、取得媒體串流、切換 view、初始化 AvatarManager、呼叫動畫 loop、拍照/錄影（合成輸出）等。 */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, createRef } from "react";
 import DrawLandmarkCanvas from "@/components/DrawLandmarkCanvas";
 import AvatarCanvas from "@/components/AvatarCanvas";
 import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
@@ -61,53 +61,92 @@ const FaceLandmarkCanvas = () => {
   // );
   // const [isPortrait, setIsPortrait] = useState(true);
 
-  const frames = [
-    // bottom
-    {
-      src: imgFrontFrameBotMid,
-      alt: "imgFrontFrameBotMid",
-      className:
-        "bottom-0 left-1/3 -translate-x-1/2 w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] 2xl:w-[650px]",
-    },
-    {
-      src: imgFrontFrameBotMid,
-      alt: "imgFrontFrameBotMid",
-      className:
-        "bottom-0 left-2/3 -translate-x-1/2 w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] 2xl:w-[650px]",
-    },
-    {
-      src: imgFrontFrameBotRight,
-      alt: "imgFrontFrameBotRight",
-      className:
-        "bottom-0 right-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px] xl:w-[350px] 2xl:w-[400px]",
-    },
-    {
-      src: imgFrontFrameBotLeft,
-      alt: "imgFrontFrameBotLeft",
-      className:
-        "bottom-0 left-0 w-[350px] sm:w-[450px] md:w-[550px] lg:w-[650px] xl:w-[750px] 2xl:w-[850px]",
-    },
-    // top
-    {
-      src: imgFrontFrameTopLeft,
-      alt: "imgFrontFrameTopLeft",
-      className: "top-0 left-0 w-full max-w-[150px]",
-    },
-    {
-      src: imgFrontFrameTopRight,
-      alt: "imgFrontFrameTopRight",
-      className: "top-0 right-0 w-full max-w-[150px]",
-    },
-    {
-      src: imgFrontFrameTopMid,
-      alt: "imgFrontFrameTopMid",
-      className: "top-0 left-1/2 -translate-x-1/2 w-full max-w-[480px]",
-    },
-  ];
+  const frames = useMemo(
+    () => [
+      // bottom
+      {
+        ref: createRef<HTMLImageElement>(),
+        src: imgFrontFrameBotMid,
+        alt: "imgFrontFrameBotMid",
+        className:
+          "bottom-0 left-1/3 -translate-x-1/2 w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] 2xl:w-[650px]",
+      },
+      {
+        ref: createRef<HTMLImageElement>(),
+        src: imgFrontFrameBotMid,
+        alt: "imgFrontFrameBotMid",
+        className:
+          "bottom-0 left-2/3 -translate-x-1/2 w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] 2xl:w-[650px]",
+      },
+      {
+        ref: createRef<HTMLImageElement>(),
+        src: imgFrontFrameBotRight,
+        alt: "imgFrontFrameBotRight",
+        className:
+          "bottom-0 right-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px] xl:w-[350px] 2xl:w-[400px]",
+      },
+      {
+        ref: createRef<HTMLImageElement>(),
+        src: imgFrontFrameBotLeft,
+        alt: "imgFrontFrameBotLeft",
+        className:
+          "bottom-0 left-0 w-[350px] sm:w-[450px] md:w-[550px] lg:w-[650px] xl:w-[750px] 2xl:w-[850px]",
+      },
+      // top
+      {
+        ref: createRef<HTMLImageElement>(),
+        src: imgFrontFrameTopLeft,
+        alt: "imgFrontFrameTopLeft",
+        className: "top-0 left-0 w-full max-w-[150px]",
+      },
+      {
+        ref: createRef<HTMLImageElement>(),
+        src: imgFrontFrameTopRight,
+        alt: "imgFrontFrameTopRight",
+        className: "top-0 right-0 w-full max-w-[150px]",
+      },
+      {
+        ref: createRef<HTMLImageElement>(),
+        src: imgFrontFrameTopMid,
+        alt: "imgFrontFrameTopMid",
+        className: "top-0 left-1/2 -translate-x-1/2 w-full max-w-[480px]",
+      },
+    ],
+    []
+  );
+
+  function drawFramesToCanvas(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    frames.forEach((frame) => {
+      const imgEl = frame.ref?.current;
+      if (!imgEl) return;
+
+      const rect = imgEl.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+
+      const x = rect.left - canvasRect.left;
+      const y = rect.top - canvasRect.top;
+      const width = rect.width;
+      const height = rect.height;
+
+      const img = new window.Image();
+      img.crossOrigin = "anonymous";
+      img.src = imgEl.src;
+
+      img.onload = () => {
+        ctx.drawImage(img, x, y, width, height);
+      };
+    });
+  }
 
   // ===== 合成需要：抓 R3F 與 Landmark 的 canvas（有 onCanvasReady 更穩；否則 fallback DOM 查找） =====
   const r3fCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const frameCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewType, setPreviewType] = useState<"image" | "video">("image");
 
@@ -262,6 +301,13 @@ const FaceLandmarkCanvas = () => {
       const width = videoRef.current.offsetWidth;
       const height = videoRef.current.offsetHeight;
       setVideoSize({ width, height });
+
+      // ✅ 這裡畫上 frame canvas 的內容
+      if (frameCanvasRef.current) {
+        frameCanvasRef.current.width = width;
+        frameCanvasRef.current.height = height;
+        drawFramesToCanvas(frameCanvasRef.current);
+      }
     }
   };
 
@@ -311,6 +357,8 @@ const FaceLandmarkCanvas = () => {
 
       const r3f = ensureR3FCanvas();
       const overlay = ensureOverlayCanvas();
+      const frameCanvas = frameCanvasRef.current;
+      if (!r3f) return alert("找不到 3D 畫布");
 
       if (r3f) {
         const r = r3f.getBoundingClientRect(); // 取 style 寬高
@@ -340,8 +388,8 @@ const FaceLandmarkCanvas = () => {
         ctx.restore();
 
         if (r3f) ctx.drawImage(r3f, 0, 0, W, H);
-
         if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
+        if (frameCanvas) ctx.drawImage(frameCanvas, 0, 0, W, H);
 
         out.toBlob((blob) => {
           if (!blob) return;
@@ -369,6 +417,7 @@ const FaceLandmarkCanvas = () => {
 
       const r3f = ensureR3FCanvas();
       const overlay = ensureOverlayCanvas();
+      const frameCanvas = frameCanvasRef.current;
       if (!r3f) return alert("找不到 3D 畫布");
 
       const r = r3f.getBoundingClientRect();
@@ -408,6 +457,7 @@ const FaceLandmarkCanvas = () => {
 
         if (r3f) ctx.drawImage(r3f, 0, 0, W, H);
         if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
+        if (frameCanvas) ctx.drawImage(frameCanvas, 0, 0, W, H);
 
         composeRafRef.current = requestAnimationFrame(draw);
       };
@@ -583,17 +633,25 @@ const FaceLandmarkCanvas = () => {
           {frames.map((frame, i) => (
             <Image
               key={i}
+              ref={frame.ref}
               src={frame.src}
               alt={frame.alt}
               width={300}
               height={300}
-              priority={i === 0} // 只有第一個加 priority
+              priority
               className={`
                 absolute z-[1000] pointer-events-none object-contain ${frame.className}
                 `}
-              // w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px]
             />
           ))}
+
+          <canvas
+            ref={frameCanvasRef}
+            className="absolute inset-0 z-[999] pointer-events-none"
+            width={videoSize?.width}
+            height={videoSize?.height}
+          />
+
           <div className="w-full h-full flex justify-center items-center">
             <video
               className={`w-full h-full object-cover ${
@@ -659,6 +717,7 @@ const FaceLandmarkCanvas = () => {
               <Image
                 src={imgBtnPlaySpin}
                 alt="imgBtnPlaySpin"
+                className="w-auto h-auto"
                 width={150}
                 height={150}
               />

@@ -50,7 +50,7 @@ export default function Nav({
               {/* <span className="absolute inset-0 rounded-full border-4 border-white/90"></span> */}
               {/* <span className="absolute inset-1.5 rounded-full bg-white/90"></span> */}
               {/* <IoMdCamera className="absolute inset-0 m-auto text-black text-2xl" /> */}
-              <Image src={imgBtnCam} alt="imgBtnCam" fill />
+              <Image src={imgBtnCam} alt="imgBtnCam" fill sizes="80px" />
             </button>
           )}
 
@@ -71,7 +71,7 @@ export default function Nav({
                 }`}
               />
               {/* <AiFillVideoCamera className="absolute inset-0 m-auto text-black text-2xl" /> */}
-              <Image src={imgBtnVideo} alt="imgBtnVideo" fill />
+              <Image src={imgBtnVideo} alt="imgBtnVideo" fill sizes="80px" />
             </button>
           )}
 

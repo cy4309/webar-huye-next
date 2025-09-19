@@ -27,7 +27,7 @@ export default function NavCameraFacing({
             {/* <span className="absolute inset-0 rounded-full border-4 border-white/90"></span> */}
             {/* <span className="absolute inset-1.5 rounded-full bg-white/90"></span> */}
             {/* <LuRefreshCw className="absolute inset-0 m-auto text-black text-2xl" /> */}
-            <Image src={imgBtnSwitch} alt="imgBtnSwitch" fill />
+            <Image src={imgBtnSwitch} alt="imgBtnSwitch" fill sizes="56px" />
           </button>
         )}
         {/* </div> */}
