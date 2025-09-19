@@ -19,7 +19,6 @@ const isPhone = isMobile || isSmallScreen;
 
 const ARModel = ({ groupRef }: { groupRef: React.RefObject<Group> }) => {
   const { scene: rawScene } = useGLTF("/models/huye.glb");
-
   const clonedScene = useMemo(() => clone(rawScene), [rawScene]);
 
   return (
@@ -38,7 +37,7 @@ const ARModel = ({ groupRef }: { groupRef: React.RefObject<Group> }) => {
 const SceneEnvironmentCanvas = ({
   onToggleCameraFacing,
 }: SceneEnvironmentCanvasProps) => {
-  const [found, setFound] = useState(false);
+  const [foundTarget, setFoundTarget] = useState<number | null>(null); // 目前0, 1兩個targets
   const [showNotice, setShowNotice] = useState(false);
   const mvRef = useRef<any>(null);
   const modelGroupRef = useRef<THREE.Group>(null);
@@ -134,12 +133,29 @@ const SceneEnvironmentCanvas = ({
         >
           <ambientLight />
           <pointLight position={[10, 10, 10]} />
+
           <ARAnchor
             target={0}
-            onAnchorFound={() => setFound(true)}
-            onAnchorLost={() => setFound(false)}
+            onAnchorFound={() => {
+              setFoundTarget(0);
+            }}
+            onAnchorLost={() => {
+              setFoundTarget(null);
+            }}
           >
-            <ARModel groupRef={modelGroupRef} />
+            {!isPhone && <ARModel groupRef={modelGroupRef} />}
+          </ARAnchor>
+
+          <ARAnchor
+            target={1}
+            onAnchorFound={() => {
+              setFoundTarget(1);
+            }}
+            onAnchorLost={() => {
+              setFoundTarget(null);
+            }}
+          >
+            {!isPhone && <ARModel groupRef={modelGroupRef} />}
           </ARAnchor>
         </ARView>
 
@@ -149,89 +165,113 @@ const SceneEnvironmentCanvas = ({
         <NavCameraFacing onToggleCameraFacing={onToggleCameraFacing} />
         {/* </div> */}
 
-        {/* 提示畫面（只在未找到 target 時顯示） */}
-        {!found && (
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center"
-            style={{
-              width: "300px",
-              backgroundImage: 'url("/assets/images/back_plane.png")',
-            }}
-          >
+        {foundTarget === null && (
+          <div className="w-[300px] p-8 z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
+            {/* 背景圖（用 img 放在最底層，opacity 可控） */}
             <Image
-              src="/assets/images/back_plane_a_tiger.png"
-              alt="huye_demo"
-              className="mt-6"
-              width={180}
-              height={180} // 可略為保守填一下，幫助 LCP 評估
+              src="/assets/images/back_plane.png"
+              alt="Back Plane"
+              fill
+              sizes="(max-width: 768px) 100vw, 300px"
+              className="opacity-50 object-contain pointer-events-none"
             />
 
-            {/* 第一步字圖：請將鏡頭與圖標保持平行 */}
-            <Image
-              src="/assets/images/back_plane_wording_step2.png"
-              alt="Step 2"
-              width={260}
-              height={50}
-              className="mt-4"
-            />
-
-            {/* 第二步字圖：請將相機對準圖標 */}
-            <Image
-              src="/assets/images/back_plane_wording_step1.png"
-              alt="Step 1"
-              width={260}
-              height={50}
-              className="mt-1"
-            />
-
-            {/* 啟動 AR 按鈕圖 */}
-            <button className="mt-4">
+            {/* 前景內容包一層 relative，確保在上方 */}
+            <div className="relative z-10 flex flex-col items-center">
               <Image
-                src="/assets/images/btn_play_ar.png"
-                alt="Start AR"
-                width={140}
-                height={50}
+                src="/assets/images/back_plane_a_tiger.png"
+                alt="huye_demo"
+                className="mt-6"
+                width={180}
+                height={180} // 可略為保守填一下，幫助 LCP 評估
               />
-            </button>
-            {/* <p className="font-bold mt-4">請將相機對準此圖標</p>
-            <p className="text-center">
-              為了獲得最佳的 AR 體驗
-              <br /> 請將相機鏡頭與現場的辨識圖標保持平行
-            </p> */}
+
+              <Image
+                src="/assets/images/back_plane_wording_step1.png"
+                alt="Step 1"
+                width={260}
+                height={50}
+                className="my-4"
+              />
+            </div>
           </div>
         )}
 
-        {/* 啟動 AR 模式按鈕（當掃到圖標時出現） */}
-        {isPhone && found && (
-          <>
-            <model-viewer
-              ref={mvRef}
-              ios-src="/models/0916t10.usdz"
-              src="/models/0916t10.glb"
-              ar
-              ar-modes="scene-viewer webxr quick-look"
-              camera-controls
-              auto-rotate
-              autoplay
-              animation-loop
-              shadow-intensity="1"
-              style={{
-                visibility: "hidden",
-                width: 0,
-                height: 0,
-                position: "absolute",
-              }}
+        {/* 手機：顯示對應板子圖 */}
+        {isPhone && foundTarget !== null && (
+          <div className="w-[300px] p-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
+            {/* 背景圖（用 img 放在最底層，opacity 可控） */}
+            <Image
+              src="/assets/images/back_plane.png"
+              alt="Back Plane"
+              fill
+              sizes="(max-width: 768px) 100vw, 300px"
+              className="opacity-50 object-contain pointer-events-none"
             />
 
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40">
+            {/* 前景內容包一層 relative，確保在上方 */}
+            <div className="relative z-10 flex flex-col items-center">
+              <Image
+                src={
+                  foundTarget === 0
+                    ? "/assets/images/back_plane_a_map.png"
+                    : "/assets/images/back_plane_b_map.png"
+                }
+                alt={`Target ${foundTarget}`}
+                width={300}
+                height={200}
+                className="opacity-90"
+              />
+
+              <Image
+                src="/assets/images/back_plane_wording_step2.png"
+                alt="Step 2"
+                width={200}
+                height={50}
+                // className="mt-4"
+              />
+
+              <model-viewer
+                ref={mvRef}
+                ios-src="/models/0916t10.usdz"
+                src="/models/0916t10.glb"
+                ar
+                ar-modes="scene-viewer webxr quick-look"
+                camera-controls
+                auto-rotate
+                autoplay
+                animation-loop
+                shadow-intensity="1"
+                style={{
+                  visibility: "hidden",
+                  width: 0,
+                  height: 0,
+                  position: "absolute",
+                }}
+              />
+
+              {/* <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40">
               <button
                 className="bg-white/80 backdrop-blur-sm text-blue-600 border-gray-400 border py-3 px-3 rounded-2xl shadow-xl"
                 onClick={(e) => handleARButtonClick(e, mvRef)}
               >
                 🚀 啟動 AR 模式
               </button>
+            </div> */}
+
+              <button
+                className="mt-4"
+                onClick={(e) => handleARButtonClick(e, mvRef)}
+              >
+                <Image
+                  src="/assets/images/btn_play_ar.png"
+                  alt="Start AR"
+                  width={200}
+                  height={50}
+                />
+              </button>
             </div>
-          </>
+          </div>
         )}
       </div>
     </>
