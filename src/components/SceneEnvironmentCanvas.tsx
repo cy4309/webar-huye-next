@@ -77,11 +77,11 @@ const SceneEnvironmentCanvas = ({
           setShowNotice(true);
           setTimeout(() => {
             setShowNotice(false);
-            window.open("/models/0916t10.usdz", "_blank");
+            window.open("/models/0919.usdz", "_blank");
           }, 4000);
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/0916t10.glb", window.location.href).toString()
+            new URL("/models/0919.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -108,11 +108,11 @@ const SceneEnvironmentCanvas = ({
           setShowNotice(true);
           setTimeout(() => {
             setShowNotice(false);
-            window.open("/models/0916t10.usdz", "_blank");
+            window.open("/models/0919.usdz", "_blank");
           }, 4000);
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/0916t10.glb", window.location.href).toString()
+            new URL("/models/0919.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -266,8 +266,8 @@ const SceneEnvironmentCanvas = ({
 
               <model-viewer
                 ref={mvRef}
-                ios-src="/models/0916t10.usdz"
-                src="/models/0916t10.glb"
+                ios-src="/models/0919.usdz"
+                src="/models/0919.glb"
                 ar
                 ar-modes="scene-viewer webxr quick-look"
                 camera-controls
