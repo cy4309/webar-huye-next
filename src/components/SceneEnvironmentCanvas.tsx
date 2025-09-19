@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { ARAnchor, ARView } from "react-three-mind";
 //@ts-ignore
 import { ambientLight, pointLight } from "@react-three/fiber";
@@ -38,9 +38,26 @@ const SceneEnvironmentCanvas = ({
   onToggleCameraFacing,
 }: SceneEnvironmentCanvasProps) => {
   const [foundTarget, setFoundTarget] = useState<number | null>(null); // 目前0, 1兩個targets
+  const [isTigerA, setIsTigerA] = useState(true);
   const [showNotice, setShowNotice] = useState(false);
   const mvRef = useRef<any>(null);
   const modelGroupRef = useRef<THREE.Group>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 為防止記憶體洩漏或錯誤觸發
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsTigerA((prev) => !prev);
+    }, 3000);
+
+    return () => clearInterval(interval); // 清理定時器
+  }, []);
 
   const handleARButtonClick = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -137,10 +154,16 @@ const SceneEnvironmentCanvas = ({
           <ARAnchor
             target={0}
             onAnchorFound={() => {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
               setFoundTarget(0);
             }}
             onAnchorLost={() => {
-              setFoundTarget(null);
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+              const duration = 6000; // 6 秒
+              timeoutRef.current = setTimeout(() => {
+                setFoundTarget(null);
+              }, duration);
             }}
           >
             {!isPhone && <ARModel groupRef={modelGroupRef} />}
@@ -149,10 +172,16 @@ const SceneEnvironmentCanvas = ({
           <ARAnchor
             target={1}
             onAnchorFound={() => {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
               setFoundTarget(1);
             }}
             onAnchorLost={() => {
-              setFoundTarget(null);
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+              const duration = 6000; // 6 秒
+              timeoutRef.current = setTimeout(() => {
+                setFoundTarget(null);
+              }, duration);
             }}
           >
             {!isPhone && <ARModel groupRef={modelGroupRef} />}
@@ -179,7 +208,11 @@ const SceneEnvironmentCanvas = ({
             {/* 前景內容包一層 relative，確保在上方 */}
             <div className="relative z-10 flex flex-col items-center">
               <Image
-                src="/assets/images/back_plane_a_tiger.png"
+                src={
+                  isTigerA
+                    ? "/assets/images/back_plane_a_tiger.png"
+                    : "/assets/images/back_plane_b_tiger.png"
+                }
                 alt="huye_demo"
                 className="mt-6"
                 width={180}
@@ -199,7 +232,7 @@ const SceneEnvironmentCanvas = ({
 
         {/* 手機：顯示對應板子圖 */}
         {isPhone && foundTarget !== null && (
-          <div className="w-[300px] p-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
+          <div className="w-[300px] p-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
             {/* 背景圖（用 img 放在最底層，opacity 可控） */}
             <Image
               src="/assets/images/back_plane.png"

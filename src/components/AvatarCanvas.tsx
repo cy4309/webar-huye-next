@@ -124,11 +124,25 @@ const AvatarCanvas = ({
               scale={0.05}
               position={[-0.1, 0.6, 0]}
               bevelEnabled
-              bevelSize={0.05}
+              bevelSize={0.005}
             >
               Loading...
-              <meshNormalMaterial />
+              <meshStandardMaterial color="#FEE191" />
+              {/* <meshNormalMaterial /> */}
             </Text3D>
+
+            <mesh>
+              {/* 再額外加一個一模一樣的字，放在背後當描邊線 */}
+              <Text3D
+                font={"/assets/fonts/Open_Sans_Condensed_Bold.json"}
+                scale={0.052} // 稍大一點點
+                position={[-0.1, 0.6, 0]}
+                bevelEnabled={false}
+              >
+                Loading...
+                <meshBasicMaterial color="black" />
+              </Text3D>
+            </mesh>
           </Float>
         )}
       </Canvas>

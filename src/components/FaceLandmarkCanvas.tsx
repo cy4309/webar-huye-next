@@ -76,7 +76,7 @@ const FaceLandmarkCanvas = () => {
         src: imgFrontFrameBotMid,
         alt: "imgFrontFrameBotMid",
         className:
-          "bottom-0 left-2/3 -translate-x-1/2 w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] 2xl:w-[650px]",
+          "bottom-0 left-2/3 -translate-x-1/2 w-[250px] sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] 2xl:w-[700px]",
       },
       {
         ref: createRef<HTMLImageElement>(),
@@ -114,34 +114,6 @@ const FaceLandmarkCanvas = () => {
     ],
     []
   );
-
-  function drawFramesToCanvas(canvas: HTMLCanvasElement) {
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    frames.forEach((frame) => {
-      const imgEl = frame.ref?.current;
-      if (!imgEl) return;
-
-      const rect = imgEl.getBoundingClientRect();
-      const canvasRect = canvas.getBoundingClientRect();
-
-      const x = rect.left - canvasRect.left;
-      const y = rect.top - canvasRect.top;
-      const width = rect.width;
-      const height = rect.height;
-
-      const img = new window.Image();
-      img.crossOrigin = "anonymous";
-      img.src = imgEl.src;
-
-      img.onload = () => {
-        ctx.drawImage(img, x, y, width, height);
-      };
-    });
-  }
 
   // ===== 合成需要：抓 R3F 與 Landmark 的 canvas（有 onCanvasReady 更穩；否則 fallback DOM 查找） =====
   const r3fCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -348,6 +320,33 @@ const FaceLandmarkCanvas = () => {
     if (c) overlayCanvasRef.current = c;
     return overlayCanvasRef.current;
   };
+  const drawFramesToCanvas = (canvas: HTMLCanvasElement) => {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    frames.forEach((frame) => {
+      const imgEl = frame.ref?.current;
+      if (!imgEl) return;
+
+      const rect = imgEl.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+
+      const x = rect.left - canvasRect.left;
+      const y = rect.top - canvasRect.top;
+      const width = rect.width;
+      const height = rect.height;
+
+      const img = new window.Image();
+      img.crossOrigin = "anonymous";
+      img.src = imgEl.src;
+
+      img.onload = () => {
+        ctx.drawImage(img, x, y, width, height);
+      };
+    });
+  };
 
   // ========== 拍照（輸出合成 PNG） ==========
   const handleShootPhoto = async () => {
@@ -358,7 +357,8 @@ const FaceLandmarkCanvas = () => {
       const r3f = ensureR3FCanvas();
       const overlay = ensureOverlayCanvas();
       const frameCanvas = frameCanvasRef.current;
-      if (!r3f) return alert("找不到 3D 畫布");
+      if (!r3f || r3f.width === 0 || r3f.height === 0)
+        return alert("找不到 3D 畫布");
 
       if (r3f) {
         const r = r3f.getBoundingClientRect(); // 取 style 寬高
@@ -387,9 +387,10 @@ const FaceLandmarkCanvas = () => {
         }
         ctx.restore();
 
-        if (r3f) ctx.drawImage(r3f, 0, 0, W, H);
-        if (overlay) ctx.drawImage(overlay, 0, 0, W, H);
-        if (frameCanvas) ctx.drawImage(frameCanvas, 0, 0, W, H);
+        // 全部都要是有效 canvas 才畫
+        if (r3f?.width) ctx.drawImage(r3f, 0, 0, W, H);
+        if (overlay?.width) ctx.drawImage(overlay, 0, 0, W, H);
+        if (frameCanvas?.width) ctx.drawImage(frameCanvas, 0, 0, W, H);
 
         out.toBlob((blob) => {
           if (!blob) return;
