@@ -81,7 +81,7 @@ const SceneEnvironmentCanvas = ({
           }, 4000);
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/0919.glb", window.location.href).toString()
+            new URL("/models/0924.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -112,7 +112,7 @@ const SceneEnvironmentCanvas = ({
           }, 4000);
         } else {
           const glb = encodeURIComponent(
-            new URL("/models/0919.glb", window.location.href).toString()
+            new URL("/models/0924.glb", window.location.href).toString()
           );
           const fallback = encodeURIComponent(window.location.href);
           window.location.href =
@@ -267,7 +267,7 @@ const SceneEnvironmentCanvas = ({
               <model-viewer
                 ref={mvRef}
                 ios-src="/models/0924.usdz"
-                src="/models/0919.glb"
+                src="/models/0924.glb"
                 ar
                 ar-modes="scene-viewer webxr quick-look"
                 camera-controls
