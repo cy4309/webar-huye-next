@@ -68,62 +68,85 @@ const SceneEnvironmentCanvas = ({
     if (!mv) return;
 
     try {
-      // model-viewer cdn
-      if (mv.canActivateAR) {
-        // await mv.activateAR(); // 原生 AR viewer
-
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        if (isIOS) {
-          setShowNotice(true);
-          setTimeout(() => {
-            setShowNotice(false);
-            window.open("/models/0924.usdz", "_blank");
-          }, 4000);
-        } else {
-          const glb = encodeURIComponent(
-            new URL("/models/0924.glb", window.location.href).toString()
-          );
-          const fallback = encodeURIComponent(window.location.href);
-          window.location.href =
-            `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
-            `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
-            `S.browser_fallback_url=${fallback};end;`;
-        }
+      // await mv.activateAR(); // 原生 AR viewer
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        window.location.href = "/models/0924.usdz";
+        // setShowNotice(true);
+        // setTimeout(() => {
+        //   setShowNotice(false);
+        //   window.open("/models/0924.usdz", "_blank");
+        // }, 4000);
       } else {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        if (isIOS) {
-          // window.open("/models/t.uz", "_blank");
-
-          // window.location.href = "/models/t.uz";
-
-          // const link = document.createElement("a");
-          // link.setAttribute("rel", "ar");
-          // link.setAttribute("href", "/models/t.uz");
-          // link.click();
-
-          // alert("即將開啟模型預覽頁，請關閉預覽後手動回到此頁面繼續操作。");
-          // setTimeout(() => {
-          //   window.open("/models/t.uz", "_blank");
-          // }, 1000);
-          setShowNotice(true);
-          setTimeout(() => {
-            setShowNotice(false);
-            window.open("/models/0924.usdz", "_blank");
-          }, 4000);
-        } else {
-          const glb = encodeURIComponent(
-            new URL("/models/0924.glb", window.location.href).toString()
-          );
-          const fallback = encodeURIComponent(window.location.href);
-          window.location.href =
-            `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
-            `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
-            `S.browser_fallback_url=${fallback};end;`;
-        }
+        const glb = encodeURIComponent(
+          new URL("/models/0924.glb", window.location.href).toString()
+        );
+        const fallback = encodeURIComponent(window.location.href);
+        window.location.href =
+          // `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
+          // `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
+          // `S.browser_fallback_url=${fallback};end;`;
+          "intent://arvr.google.com/scene-viewer/1.0?file=https://artgital.com/projects/test/honda/model/v1.glb&amp;mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;";
       }
     } catch (err) {
       console.warn("activateAR failed:", err);
     }
+
+    // try {
+    //   // model-viewer cdn
+    //   if (mv.canActivateAR) {
+    //     // await mv.activateAR(); // 原生 AR viewer
+    //     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    //     if (isIOS) {
+    //       setShowNotice(true);
+    //       setTimeout(() => {
+    //         setShowNotice(false);
+    //         window.open("/models/0924.usdz", "_blank");
+    //       }, 4000);
+    //     } else {
+    //       const glb = encodeURIComponent(
+    //         new URL("/models/0924.glb", window.location.href).toString()
+    //       );
+    //       const fallback = encodeURIComponent(window.location.href);
+    //       window.location.href =
+    //         `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
+    //         `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
+    //         `S.browser_fallback_url=${fallback};end;`;
+    //     }
+    //   } else {
+    //     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    //     if (isIOS) {
+    //       // await mv.activateAR(); // 原生 AR viewer
+
+    //       // window.open("/models/t.uz", "_blank");
+    //       // window.location.href = "/models/t.uz";
+    //       // const link = document.createElement("a");
+    //       // link.setAttribute("rel", "ar");
+    //       // link.setAttribute("href", "/models/t.uz");
+    //       // link.click();
+    //       // alert("即將開啟模型預覽頁，請關閉預覽後手動回到此頁面繼續操作。");
+    //       // setTimeout(() => {
+    //       //   window.open("/models/t.uz", "_blank");
+    //       // }, 1000);
+    //       setShowNotice(true);
+    //       setTimeout(() => {
+    //         setShowNotice(false);
+    //         window.open("/models/0924.usdz", "_blank");
+    //       }, 4000);
+    //     } else {
+    //       const glb = encodeURIComponent(
+    //         new URL("/models/0924.glb", window.location.href).toString()
+    //       );
+    //       const fallback = encodeURIComponent(window.location.href);
+    //       window.location.href =
+    //         `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
+    //         `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
+    //         `S.browser_fallback_url=${fallback};end;`;
+    //     }
+    //   }
+    // } catch (err) {
+    //   console.warn("activateAR failed:", err);
+    // }
   };
 
   return (
@@ -276,49 +299,59 @@ const SceneEnvironmentCanvas = ({
                 animation-loop
                 shadow-intensity="1"
                 style={{
-                  visibility: "hidden",
-                  width: 0,
-                  height: 0,
-                  position: "absolute",
+                  // visibility: "hidden",
+                  // width: 0,
+                  // height: 0,
+                  // position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  maxWidth: "100%",
+                  maxHeight: "100%",
                 }}
               />
 
-              {/* <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40">
-              <button
-                className="bg-white/80 backdrop-blur-sm text-blue-600 border-gray-400 border py-3 px-3 rounded-2xl shadow-xl"
-                onClick={(e) => handleARButtonClick(e, mvRef)}
-              >
-                🚀 啟動 AR 模式
-              </button>
-            </div> */}
-
-              {/* <div
-                className="mt-2 relative w-[230px] h-[230px]"
-                style={{
-                  transform: "translate(0px, 0px)",
-                }}
-              >
-                <Image
-                  src="/assets/images/btn_play_ar.png"
-                  alt="btn"
-                  width={230}
-                  height={230}
-                />
+              {/* <div className="w-[230px] relative">
                 <a
+                  className="w-[230px] h-auto absolute top-0 left-0 z-10"
                   href="/models/0924.usdz"
                   rel="ar"
-                  className="absolute inset-0 block"
                 >
                   <Image
+                    src="/assets/images/btn_play_ar.png"
                     alt="btn"
                     width={230}
                     height={230}
-                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAABCCAYAAABD56pDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABSSURBVHhe7cExAQAAAMKg9U9tDQ8gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOBWDe1yAAH1D+hYAAAAAElFTkSuQmCC"
                   />
                 </a>
               </div> */}
 
-              <button
+              <div className="w-[230px] relative">
+                <a
+                  className="w-[230px] h-auto absolute top-0 left-0 z-10"
+                  href={
+                    isMobile
+                      ? "/models/0924.usdz"
+                      : `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(
+                          new URL(
+                            "/models/0924.glb",
+                            window.location.href
+                          ).toString()
+                        )}&mode=ar_preferred#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(
+                          window.location.href
+                        )};end;`
+                  }
+                  rel={isMobile ? "ar" : undefined}
+                >
+                  <Image
+                    src="/assets/images/btn_play_ar.png"
+                    alt="btn"
+                    width={230}
+                    height={230}
+                  />
+                </a>
+              </div>
+
+              {/* <button
                 // slot="ar-button"
                 className="mt-4"
                 onClick={(e) => handleARButtonClick(e, mvRef)}
@@ -329,7 +362,7 @@ const SceneEnvironmentCanvas = ({
                   width={200}
                   height={50}
                 />
-              </button>
+              </button> */}
             </div>
           </div>
         )}
