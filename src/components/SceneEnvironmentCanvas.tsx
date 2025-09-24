@@ -77,7 +77,7 @@ const SceneEnvironmentCanvas = ({
           setShowNotice(true);
           setTimeout(() => {
             setShowNotice(false);
-            window.open("/models/0919.usdz", "_blank");
+            window.open("/models/0924.usdz", "_blank");
           }, 4000);
         } else {
           const glb = encodeURIComponent(
@@ -108,7 +108,7 @@ const SceneEnvironmentCanvas = ({
           setShowNotice(true);
           setTimeout(() => {
             setShowNotice(false);
-            window.open("/models/0919.usdz", "_blank");
+            window.open("/models/0924.usdz", "_blank");
           }, 4000);
         } else {
           const glb = encodeURIComponent(
@@ -266,7 +266,7 @@ const SceneEnvironmentCanvas = ({
 
               <model-viewer
                 ref={mvRef}
-                ios-src="/models/0919.usdz"
+                ios-src="/models/0924.usdz"
                 src="/models/0919.glb"
                 ar
                 ar-modes="scene-viewer webxr quick-look"
@@ -292,7 +292,34 @@ const SceneEnvironmentCanvas = ({
               </button>
             </div> */}
 
+              {/* <div
+                className="mt-2 relative w-[230px] h-[230px]"
+                style={{
+                  transform: "translate(0px, 0px)",
+                }}
+              >
+                <Image
+                  src="/assets/images/btn_play_ar.png"
+                  alt="btn"
+                  width={230}
+                  height={230}
+                />
+                <a
+                  href="/models/0924.usdz"
+                  rel="ar"
+                  className="absolute inset-0 block"
+                >
+                  <Image
+                    alt="btn"
+                    width={230}
+                    height={230}
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAABCCAYAAABD56pDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABSSURBVHhe7cExAQAAAMKg9U9tDQ8gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOBWDe1yAAH1D+hYAAAAAElFTkSuQmCC"
+                  />
+                </a>
+              </div> */}
+
               <button
+                // slot="ar-button"
                 className="mt-4"
                 onClick={(e) => handleARButtonClick(e, mvRef)}
               >
