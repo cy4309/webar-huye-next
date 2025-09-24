@@ -16,6 +16,7 @@ interface SceneEnvironmentCanvasProps {
 const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 const isSmallScreen = typeof window !== "undefined" && window.innerWidth < 768;
 const isPhone = isMobile || isSmallScreen;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 const ARModel = ({ groupRef }: { groupRef: React.RefObject<Group> }) => {
   const { scene: rawScene } = useGLTF("/models/huye.glb");
@@ -329,7 +330,7 @@ const SceneEnvironmentCanvas = ({
                 <a
                   className="w-[230px] h-auto absolute top-0 left-0 z-10"
                   href={
-                    isMobile
+                    isIOS
                       ? "/models/0924.usdz"
                       : `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(
                           new URL(
@@ -340,7 +341,7 @@ const SceneEnvironmentCanvas = ({
                           window.location.href
                         )};end;`
                   }
-                  rel={isMobile ? "ar" : undefined}
+                  rel={isIOS ? "ar" : undefined}
                 >
                   <Image
                     src="/assets/images/btn_play_ar.png"
