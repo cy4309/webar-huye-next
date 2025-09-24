@@ -16,7 +16,6 @@ interface SceneEnvironmentCanvasProps {
 const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 const isSmallScreen = typeof window !== "undefined" && window.innerWidth < 768;
 const isPhone = isMobile || isSmallScreen;
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 const ARModel = ({ groupRef }: { groupRef: React.RefObject<Group> }) => {
   const { scene: rawScene } = useGLTF("/models/huye.glb");
@@ -40,7 +39,7 @@ const SceneEnvironmentCanvas = ({
 }: SceneEnvironmentCanvasProps) => {
   const [foundTarget, setFoundTarget] = useState<number | null>(null); // 目前0, 1兩個targets
   const [isTigerA, setIsTigerA] = useState(true);
-  // const [showNotice, setShowNotice] = useState(false);
+  const [showNotice, setShowNotice] = useState(false);
   const mvRef = useRef<any>(null);
   const modelGroupRef = useRef<THREE.Group>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -60,47 +59,81 @@ const SceneEnvironmentCanvas = ({
     return () => clearInterval(interval); // 清理定時器
   }, []);
 
-  // const handleARButtonClick = async (
-  //   e: React.MouseEvent<HTMLButtonElement>,
-  //   mvRef: React.RefObject<any>
-  // ) => {
-  //   e.stopPropagation();
-  //   const mv = mvRef.current;
-  //   if (!mv) return;
+  const handleARButtonClick = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    mvRef: React.RefObject<any>
+  ) => {
+    e.stopPropagation();
+    const mv = mvRef.current;
+    if (!mv) return;
 
-  //   // if (mv.canActivateAR) {
-  //   // await mv.activateAR(); // 原生 AR viewer
-  //   try {
-  //     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  //     if (isIOS) {
-  //       setShowNotice(true);
-  //       setTimeout(() => {
-  //         setShowNotice(false);
-  //         window.open("/models/0924.usdz", "_blank");
-  //       }, 4000);
-  //     } else {
-  //       const glb = encodeURIComponent(
-  //         new URL("/models/0924.glb", window.location.href).toString()
-  //       );
-  //       const fallback = encodeURIComponent(window.location.href);
-  //       window.location.href =
-  //         `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
-  //         `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
-  //         `S.browser_fallback_url=${fallback};end;`;
-  //     }
-  //   } catch (err) {
-  //     console.warn("activateAR failed:", err);
-  //   }
-  // };
+    try {
+      // model-viewer cdn
+      if (mv.canActivateAR) {
+        // await mv.activateAR(); // 原生 AR viewer
+
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (isIOS) {
+          setShowNotice(true);
+          setTimeout(() => {
+            setShowNotice(false);
+            window.open("/models/0924.usdz", "_blank");
+          }, 4000);
+        } else {
+          const glb = encodeURIComponent(
+            new URL("/models/0924.glb", window.location.href).toString()
+          );
+          const fallback = encodeURIComponent(window.location.href);
+          window.location.href =
+            `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
+            `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
+            `S.browser_fallback_url=${fallback};end;`;
+        }
+      } else {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (isIOS) {
+          // window.open("/models/t.uz", "_blank");
+
+          // window.location.href = "/models/t.uz";
+
+          // const link = document.createElement("a");
+          // link.setAttribute("rel", "ar");
+          // link.setAttribute("href", "/models/t.uz");
+          // link.click();
+
+          // alert("即將開啟模型預覽頁，請關閉預覽後手動回到此頁面繼續操作。");
+          // setTimeout(() => {
+          //   window.open("/models/t.uz", "_blank");
+          // }, 1000);
+          setShowNotice(true);
+          setTimeout(() => {
+            setShowNotice(false);
+            window.open("/models/0924.usdz", "_blank");
+          }, 4000);
+        } else {
+          const glb = encodeURIComponent(
+            new URL("/models/0924.glb", window.location.href).toString()
+          );
+          const fallback = encodeURIComponent(window.location.href);
+          window.location.href =
+            `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
+            `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
+            `S.browser_fallback_url=${fallback};end;`;
+        }
+      }
+    } catch (err) {
+      console.warn("activateAR failed:", err);
+    }
+  };
 
   return (
     <>
       <div className="w-full h-full relative flex flex-col items-center">
-        {/* {showNotice && (
+        {showNotice && (
           <div className="fixed w-full top-5 left-0 text-center text-white bg-black px-4 py-2 rounded shadow-lg z-[9999] animate-fade-in-out">
             即將開啟模型預覽頁，關閉後請手動回來本頁
           </div>
-        )} */}
+        )}
 
         {/* AR背景始終顯示 */}
         <ARView
@@ -231,7 +264,7 @@ const SceneEnvironmentCanvas = ({
                 // className="mt-4"
               />
 
-              {/* <model-viewer
+              <model-viewer
                 ref={mvRef}
                 ios-src="/models/0924.usdz"
                 src="/models/0924.glb"
@@ -243,44 +276,49 @@ const SceneEnvironmentCanvas = ({
                 animation-loop
                 shadow-intensity="1"
                 style={{
-                  // visibility: "hidden",
-                  // width: 0,
-                  // height: 0,
-                  // position: "absolute",
-                  width: "100%",
-                  height: "100%",
-                  maxWidth: "100%",
-                  maxHeight: "100%",
+                  visibility: "hidden",
+                  width: 0,
+                  height: 0,
+                  position: "absolute",
                 }}
-              /> */}
+              />
 
-              <div className="w-[230px] h-[60px] relative mb-2">
+              {/* <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40">
+              <button
+                className="bg-white/80 backdrop-blur-sm text-blue-600 border-gray-400 border py-3 px-3 rounded-2xl shadow-xl"
+                onClick={(e) => handleARButtonClick(e, mvRef)}
+              >
+                🚀 啟動 AR 模式
+              </button>
+            </div> */}
+
+              {/* <div
+                className="mt-2 relative w-[230px] h-[230px]"
+                style={{
+                  transform: "translate(0px, 0px)",
+                }}
+              >
+                <Image
+                  src="/assets/images/btn_play_ar.png"
+                  alt="btn"
+                  width={230}
+                  height={230}
+                />
                 <a
-                  className="absolute top-0 left-0 z-10"
-                  href={
-                    isIOS
-                      ? "/models/0924.usdz"
-                      : `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(
-                          new URL(
-                            "/models/0924.glb",
-                            window.location.href
-                          ).toString()
-                        )}&mode=ar_preferred#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(
-                          window.location.href
-                        )};end;`
-                  }
-                  rel={isIOS ? "ar" : undefined}
+                  href="/models/0924.usdz"
+                  rel="ar"
+                  className="absolute inset-0 block"
                 >
                   <Image
-                    src="/assets/images/btn_play_ar.png"
-                    alt="Start AR"
+                    alt="btn"
                     width={230}
                     height={230}
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAABCCAYAAABD56pDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABSSURBVHhe7cExAQAAAMKg9U9tDQ8gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOBWDe1yAAH1D+hYAAAAAElFTkSuQmCC"
                   />
                 </a>
-              </div>
+              </div> */}
 
-              {/* <button
+              <button
                 // slot="ar-button"
                 className="mt-4"
                 onClick={(e) => handleARButtonClick(e, mvRef)}
@@ -291,7 +329,7 @@ const SceneEnvironmentCanvas = ({
                   width={200}
                   height={50}
                 />
-              </button> */}
+              </button>
             </div>
           </div>
         )}
