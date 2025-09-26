@@ -16,8 +16,8 @@ import MediaPreviewModal from "@/components/MediaPreviewModal";
 import Image from "next/image";
 import imgBtnPlaySpin from "/public/assets/images/btn_play_spin.png";
 import imgFrontFrameBotMid from "/public/assets/images/front_frame_bot_mid.png";
-import imgFrontFrameBotRight from "/public/assets/images/front_frame_bot_right.png";
-import imgFrontFrameBotLeft from "/public/assets/images/front_frame_bot_left.png";
+// import imgFrontFrameBotRight from "/public/assets/images/front_frame_bot_right.png";
+// import imgFrontFrameBotLeft from "/public/assets/images/front_frame_bot_left.png";
 import imgFrontFrameTopLeft from "/public/assets/images/front_frame_top_left.png";
 import imgFrontFrameTopRight from "/public/assets/images/front_frame_top_right.png";
 import imgFrontFrameTopMid from "/public/assets/images/front_frame_top_mid.png";
@@ -69,29 +69,36 @@ const FaceLandmarkCanvas = () => {
         src: imgFrontFrameBotMid,
         alt: "imgFrontFrameBotMid",
         className:
-          "bottom-0 left-1/3 -translate-x-1/2 w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] 2xl:w-[650px]",
+          "scale-95 bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px]",
       },
-      {
-        ref: createRef<HTMLImageElement>(),
-        src: imgFrontFrameBotMid,
-        alt: "imgFrontFrameBotMid",
-        className:
-          "bottom-0 left-2/3 -translate-x-1/2 w-[250px] sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] 2xl:w-[700px]",
-      },
-      {
-        ref: createRef<HTMLImageElement>(),
-        src: imgFrontFrameBotRight,
-        alt: "imgFrontFrameBotRight",
-        className:
-          "bottom-0 right-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px] xl:w-[350px] 2xl:w-[400px]",
-      },
-      {
-        ref: createRef<HTMLImageElement>(),
-        src: imgFrontFrameBotLeft,
-        alt: "imgFrontFrameBotLeft",
-        className:
-          "bottom-0 left-0 w-[350px] sm:w-[450px] md:w-[550px] lg:w-[650px] xl:w-[750px] 2xl:w-[850px]",
-      },
+      // {
+      //   ref: createRef<HTMLImageElement>(),
+      //   src: imgFrontFrameBotMid,
+      //   alt: "imgFrontFrameBotMid",
+      //   className:
+      //     "bottom-0 left-1/3 -translate-x-1/2 w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] 2xl:w-[650px]",
+      // },
+      // {
+      //   ref: createRef<HTMLImageElement>(),
+      //   src: imgFrontFrameBotMid,
+      //   alt: "imgFrontFrameBotMid",
+      //   className:
+      //     "bottom-0 left-2/3 -translate-x-1/2 w-[250px] sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] 2xl:w-[700px]",
+      // },
+      // {
+      //   ref: createRef<HTMLImageElement>(),
+      //   src: imgFrontFrameBotRight,
+      //   alt: "imgFrontFrameBotRight",
+      //   className:
+      //     "bottom-0 right-0 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px] xl:w-[350px] 2xl:w-[400px]",
+      // },
+      // {
+      //   ref: createRef<HTMLImageElement>(),
+      //   src: imgFrontFrameBotLeft,
+      //   alt: "imgFrontFrameBotLeft",
+      //   className:
+      //     "bottom-0 left-0 w-[350px] sm:w-[450px] md:w-[550px] lg:w-[650px] xl:w-[750px] 2xl:w-[850px]",
+      // },
       // top
       {
         ref: createRef<HTMLImageElement>(),
@@ -320,15 +327,16 @@ const FaceLandmarkCanvas = () => {
     if (c) overlayCanvasRef.current = c;
     return overlayCanvasRef.current;
   };
-  const drawFramesToCanvas = (canvas: HTMLCanvasElement) => {
+  const drawFramesToCanvas = async (canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    frames.forEach((frame) => {
-      const imgEl = frame.ref?.current;
-      if (!imgEl) return;
+    // frames轉成同步迴圈，img.onload是非同步載入圖片，會導致順序不同
+    for (const frame of frames) {
+      const imgEl = frame.ref.current;
+      if (!imgEl) continue;
 
       const rect = imgEl.getBoundingClientRect();
       const canvasRect = canvas.getBoundingClientRect();
@@ -338,14 +346,16 @@ const FaceLandmarkCanvas = () => {
       const width = rect.width;
       const height = rect.height;
 
-      const img = new window.Image();
-      img.crossOrigin = "anonymous";
-      img.src = imgEl.src;
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new window.Image();
+        image.crossOrigin = "anonymous";
+        image.src = imgEl.src;
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+      });
 
-      img.onload = () => {
-        ctx.drawImage(img, x, y, width, height);
-      };
-    });
+      ctx.drawImage(img, x, y, width, height);
+    }
   };
 
   // ========== 拍照（輸出合成 PNG） ==========

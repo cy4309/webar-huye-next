@@ -141,11 +141,11 @@ const SceneEnvironmentCanvas = ({
   return (
     <>
       <div className="w-full h-full relative flex flex-col items-center">
-        {/* {showNotice && (
+        {showNotice && (
           <div className="fixed w-full top-5 left-0 text-center text-white bg-black px-4 py-2 rounded shadow-lg z-[9999] animate-fade-in-out">
             即將開啟模型預覽頁，關閉後請手動回來本頁
           </div>
-        )} */}
+        )}
 
         {/* AR背景始終顯示 */}
         <ARView
@@ -281,26 +281,27 @@ const SceneEnvironmentCanvas = ({
                 ref={mvRef}
                 ios-src="/models/0924.usdz"
                 src="/models/0924.glb"
+                alt="3D model"
                 ar
-                ar-modes="scene-viewer quick-look webxr"
+                ar-modes="scene-viewer quick-look"
                 camera-controls
                 auto-rotate
                 autoplay
-                animation-loop
+                // animation-loop
                 shadow-intensity="1"
-                // style={{
-                //   visibility: "hidden",
-                //   width: 0,
-                //   height: 0,
-                //   position: "absolute",
-                // }}
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  maxWidth: "100%",
-                  maxHeight: "100%",
+                  visibility: "hidden",
+                  width: 0,
+                  height: 0,
+                  position: "absolute",
                 }}
-              ></model-viewer>
+                // style={{
+                //   width: "230px",
+                //   height: "100px",
+                //   maxWidth: "100%",
+                //   maxHeight: "100%",
+                // }}
+              />
 
               <button
                 slot="ar-button"
