@@ -29,7 +29,7 @@ export default function Nav({
   return (
     <>
       <nav className="w-full relative z-[9999]">
-        <div className="gap-4 w-full absolute bottom-8 left-0 right-0 flex justify-center">
+        <div className="gap-4 w-full absolute bottom-16 left-0 right-0 flex justify-center">
           {/* 模式切換 */}
           {onToggleAvatarView && (
             <div className="gap-8 px-6 py-3 flex justify-center items-center rounded-full bg-black/10 backdrop-blur-md border border-white/10">
