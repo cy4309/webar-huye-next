@@ -377,6 +377,11 @@ const FaceLandmarkCanvas = () => {
         const videoW = v.videoWidth;
         const videoH = v.videoHeight;
 
+        // 確保 frameCanvas 已完成繪圖
+        if (frameCanvas) {
+          await drawFramesToCanvas(frameCanvas);
+        }
+
         const out = document.createElement("canvas");
         out.width = W;
         out.height = H;
@@ -436,6 +441,11 @@ const FaceLandmarkCanvas = () => {
       const H = r.height;
       const videoW = v.videoWidth;
       const videoH = v.videoHeight;
+
+      // 確保 frameCanvas 已完成繪圖
+      if (frameCanvas) {
+        await drawFramesToCanvas(frameCanvas);
+      }
 
       // 設定 composite canvas
       composeCanvasRef.current = document.createElement("canvas");

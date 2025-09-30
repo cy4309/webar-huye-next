@@ -8,7 +8,7 @@ import { Group } from "three";
 import * as THREE from "three";
 import NavCameraFacing from "@/components/NavCameraFacing";
 import Image from "next/image";
-import "@google/model-viewer";
+// import "@google/model-viewer";
 
 interface SceneEnvironmentCanvasProps {
   onToggleCameraFacing: () => void;
@@ -68,81 +68,46 @@ const SceneEnvironmentCanvas = ({
     const mv = mvRef.current;
     if (!mv) return;
 
-    if (mv.activateAR) {
-      try {
-        await mv.activateAR();
-        console.log("✅ AR viewer launched");
-      } catch (err) {
-        console.error("❌ Failed to activateAR", err);
-      }
-    } else {
-      console.warn("❌ mv.activateAR 不存在，可能 model-viewer 未正確初始化");
-    }
-
-    // try {
-    //   await mv.activateAR(); // 原生 AR viewer
-    //   // if (mv.canActivateAR) {
-    //   //   await mv.activateAR(); // 原生 AR viewer
-
-    //   //   // const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    //   //   // if (isIOS) {
-    //   //   //   setShowNotice(true);
-    //   //   //   setTimeout(() => {
-    //   //   //     setShowNotice(false);
-    //   //   //     window.open("/models/0924.usdz", "_blank");
-    //   //   //   }, 4000);
-    //   //   // } else {
-    //   //   //   const glb = encodeURIComponent(
-    //   //   //     new URL("/models/0924.glb", window.location.href).toString()
-    //   //   //   );
-    //   //   //   const fallback = encodeURIComponent(window.location.href);
-    //   //   //   window.location.href =
-    //   //   //     `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
-    //   //   //     `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
-    //   //   //     `S.browser_fallback_url=${fallback};end;`;
-    //   //   // }
-    //   // } else {
-    //   //   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    //   //   if (isIOS) {
-    //   //     // window.open("/models/t.uz", "_blank");
-
-    //   //     // window.location.href = "/models/t.uz";
-
-    //   //     // const link = document.createElement("a");
-    //   //     // link.setAttribute("rel", "ar");
-    //   //     // link.setAttribute("href", "/models/t.uz");
-    //   //     // link.click();
-
-    //   //     // alert("即將開啟模型預覽頁，請關閉預覽後手動回到此頁面繼續操作。");
-    //   //     // setTimeout(() => {
-    //   //     //   window.open("/models/t.uz", "_blank");
-    //   //     // }, 1000);
-    //   //     setShowNotice(true);
-    //   //     setTimeout(() => {
-    //   //       setShowNotice(false);
-    //   //       window.open("/models/0924.usdz", "_blank");
-    //   //     }, 4000);
-    //   //   } else {
-    //   //     const glb = encodeURIComponent(
-    //   //       new URL("/models/0924.glb", window.location.href).toString()
-    //   //     );
-    //   //     const fallback = encodeURIComponent(window.location.href);
-    //   //     window.location.href =
-    //   //       `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
-    //   //       `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
-    //   //       `S.browser_fallback_url=${fallback};end;`;
-    //   //   }
-    //   // }
-    // } catch (err) {
-    //   console.warn("activateAR failed:", err);
+    // if (mv.activateAR) {
+    //   try {
+    //     await mv.activateAR();
+    //     console.log("✅ AR viewer launched");
+    //   } catch (err) {
+    //     console.error("❌ Failed to activateAR", err);
+    //   }
+    // } else {
+    //   console.warn("❌ mv.activateAR 不存在，可能 model-viewer 未正確初始化");
     // }
+
+    try {
+      // await mv.activateAR(); // 原生 AR viewer
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        setShowNotice(true);
+        setTimeout(() => {
+          setShowNotice(false);
+          window.open("/models/0924.usdz", "_blank");
+        }, 4000);
+      } else {
+        const glb = encodeURIComponent(
+          new URL("/models/0924.glb", window.location.href).toString()
+        );
+        const fallback = encodeURIComponent(window.location.href);
+        window.location.href =
+          `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
+          `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
+          `S.browser_fallback_url=${fallback};end;`;
+      }
+    } catch (err) {
+      console.warn("activateAR failed:", err);
+    }
   };
 
   return (
     <>
       <div className="w-full h-full relative flex flex-col items-center">
         {showNotice && (
-          <div className="fixed w-full top-5 left-0 text-center text-white bg-black px-4 py-2 rounded shadow-lg z-[9999] animate-fade-in-out">
+          <div className="fixed w-full top-0 left-0 text-center text-white bg-black px-4 py-2 rounded shadow-lg z-[9999] animate-fade-in-out">
             即將開啟模型預覽頁，關閉後請手動回來本頁
           </div>
         )}
@@ -226,7 +191,8 @@ const SceneEnvironmentCanvas = ({
                     : "/assets/images/back_plane_b_tiger.png"
                 }
                 alt="huye_demo"
-                className="mt-6"
+                className="mt-6 object-contain"
+                // fill
                 width={180}
                 height={180} // 可略為保守填一下，幫助 LCP 評估
               />

@@ -4,6 +4,7 @@
 import Image from "next/image";
 import imgBtnCam from "/public/assets/images/btn_cam.png";
 import imgBtnVideo from "/public/assets/images/btn_video.png";
+import imgBtnVideoStop from "/public/assets/images/btn_video_stop.png";
 
 interface NavProps {
   avatarView?: boolean;
@@ -72,7 +73,16 @@ export default function Nav({
                 }`}
               />
               {/* <AiFillVideoCamera className="absolute inset-0 m-auto text-black text-2xl" /> */}
-              <Image src={imgBtnVideo} alt="imgBtnVideo" fill sizes="80px" />
+              {isRecording ? (
+                <Image
+                  src={imgBtnVideoStop}
+                  alt="imgBtnVideoStop"
+                  fill
+                  sizes="80px"
+                />
+              ) : (
+                <Image src={imgBtnVideo} alt="imgBtnVideo" fill sizes="80px" />
+              )}
             </button>
           )}
 
