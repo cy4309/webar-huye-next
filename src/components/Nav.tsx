@@ -5,6 +5,8 @@ import Image from "next/image";
 import imgBtnCam from "/public/assets/images/btn_cam.png";
 import imgBtnVideo from "/public/assets/images/btn_video.png";
 import imgBtnVideoStop from "/public/assets/images/btn_video_stop.png";
+import imgBtnAvatar from "/public/assets/images/btn_avatar.png";
+import imgBtnLandmark from "/public/assets/images/btn_landmark.png";
 
 interface NavProps {
   avatarView?: boolean;
@@ -33,13 +35,32 @@ export default function Nav({
         <div className="gap-4 w-full absolute bottom-16 left-0 right-0 flex justify-center">
           {/* 模式切換 */}
           {onToggleAvatarView && (
-            <div className="gap-8 px-6 py-3 flex justify-center items-center rounded-full bg-black/10 backdrop-blur-md border border-white/10">
-              <button onClick={onToggleAvatarView} className="!rounded-full">
-                <span className="text-white/90 text-sm tracking-wide">
+            // <div className="gap-8 px-6 py-3 flex justify-center items-center rounded-full bg-black/10 backdrop-blur-md border border-white/10">
+            // <button onClick={onToggleAvatarView} className="!rounded-full">
+            <button
+              onClick={onToggleAvatarView}
+              className="relative w-20 h-20 rounded-full"
+            >
+              {avatarView ? (
+                <Image
+                  src={imgBtnLandmark}
+                  alt="imgBtnLandmark"
+                  fill
+                  sizes="80px"
+                />
+              ) : (
+                <Image
+                  src={imgBtnAvatar}
+                  alt="imgBtnAvatar"
+                  fill
+                  sizes="80px"
+                />
+              )}
+              {/* <span className="text-white/90 text-sm tracking-wide">
                   {avatarView ? "Avatar" : "Landmark"}
-                </span>
-              </button>
-            </div>
+                </span> */}
+            </button>
+            // </div>
           )}
 
           {/* 拍照（合成輸出） */}

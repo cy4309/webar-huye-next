@@ -3,9 +3,9 @@
 import { useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import btnHome from "/public/assets/images/btn_home.png";
-import backPlane from "/public/assets/images/back_plane.png";
-// import btnPlayAr from "/public/assets/images/btn_play_ar.png";
+import imgBtnHome from "/public/assets/images/btn_home.png";
+import imgBackPlane from "/public/assets/images/back_plane.png";
+// import imgBtnPlayAr from "/public/assets/images/btn_play_ar.png";
 
 export default function ARPage() {
   const mvRef = useRef<any>(null);
@@ -31,13 +31,13 @@ export default function ARPage() {
         className="absolute top-8 right-8 z-[9999]"
         onClick={() => router.back()}
       >
-        <Image src={btnHome} alt="btnHome" width={56} height={56} />
+        <Image src={imgBtnHome} alt="imgBtnHome" width={56} height={56} />
       </button>
 
       <div className="w-[300px] h-[300px] p-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
         <Image
-          src={backPlane}
-          alt="backPlane"
+          src={imgBackPlane}
+          alt="imgBackPlane"
           fill
           sizes="(max-width: 768px) 100vw, 300px"
           className="opacity-50 object-contain pointer-events-none"
@@ -69,8 +69,8 @@ export default function ARPage() {
           // onClick={(e) => handleARButtonClick(e, mvRef)}
         >
           <Image
-            src={btnPlayAr}
-            alt="btnPlayAr"
+            src={imgBtnPlayAr}
+            alt="imgBtnPlayAr"
             width={200}
             height={50}
           />

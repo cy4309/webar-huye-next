@@ -9,14 +9,14 @@ import * as THREE from "three";
 import NavCameraFacing from "@/components/NavCameraFacing";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import backPlane from "/public/assets/images/back_plane.png";
-import backPlaneATiger from "/public/assets/images/back_plane_a_tiger.png";
-import backPlaneBTiger from "/public/assets/images/back_plane_b_tiger.png";
-import backPlaneWordingStep1 from "/public/assets/images/back_plane_wording_step1.png";
-import backPlaneAMap from "/public/assets/images/back_plane_a_map.png";
-import backPlaneBMap from "/public/assets/images/back_plane_b_map.png";
-import backPlaneWordingStep2 from "/public/assets/images/back_plane_wording_step2.png";
-import btnPlayAr from "/public/assets/images/btn_play_ar.png";
+import imgBackPlane from "/public/assets/images/back_plane.png";
+import imgBackPlaneATiger from "/public/assets/images/back_plane_a_tiger.png";
+import imgBackPlaneBTiger from "/public/assets/images/back_plane_b_tiger.png";
+import imgBackPlaneWordingStep1 from "/public/assets/images/back_plane_wording_step1.png";
+import imgBackPlaneAMap from "/public/assets/images/back_plane_a_map.png";
+import imgBackPlaneBMap from "/public/assets/images/back_plane_b_map.png";
+import imgBackPlaneWordingStep2 from "/public/assets/images/back_plane_wording_step2.png";
+import imgBtnPlayAr from "/public/assets/images/btn_play_ar.png";
 
 interface SceneEnvironmentCanvasProps {
   onToggleCameraFacing: () => void;
@@ -189,8 +189,8 @@ const SceneEnvironmentCanvas = ({
           <div className="w-[300px] p-8 z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
             {/* 背景圖（用 img 放在最底層，opacity 可控） */}
             <Image
-              src={backPlane}
-              alt="backPlane"
+              src={imgBackPlane}
+              alt="imgBackPlane"
               fill
               sizes="(max-width: 768px) 100vw, 300px"
               className="opacity-50 object-contain pointer-events-none"
@@ -199,7 +199,7 @@ const SceneEnvironmentCanvas = ({
             {/* 前景內容包一層 relative，確保在上方 */}
             <div className="relative z-10 flex flex-col items-center">
               <Image
-                src={isTigerA ? backPlaneATiger : backPlaneBTiger}
+                src={isTigerA ? imgBackPlaneATiger : imgBackPlaneBTiger}
                 alt="huye_demo"
                 className="mt-6 object-contain"
                 // fill
@@ -208,8 +208,8 @@ const SceneEnvironmentCanvas = ({
               />
 
               <Image
-                src={backPlaneWordingStep1}
-                alt="backPlaneWordingStep1"
+                src={imgBackPlaneWordingStep1}
+                alt="imgBackPlaneWordingStep1"
                 width={260}
                 height={50}
                 className="my-4"
@@ -223,8 +223,8 @@ const SceneEnvironmentCanvas = ({
           <div className="w-[300px] p-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
             {/* 背景圖（用 img 放在最底層，opacity 可控） */}
             <Image
-              src={backPlane}
-              alt="backPlane"
+              src={imgBackPlane}
+              alt="imgBackPlane"
               fill
               sizes="(max-width: 768px) 100vw, 300px"
               className="opacity-50 object-contain pointer-events-none"
@@ -233,7 +233,7 @@ const SceneEnvironmentCanvas = ({
             {/* 前景內容包一層 relative，確保在上方 */}
             <div className="relative z-10 flex flex-col items-center">
               <Image
-                src={foundTarget === 0 ? backPlaneAMap : backPlaneBMap}
+                src={foundTarget === 0 ? imgBackPlaneAMap : imgBackPlaneBMap}
                 alt={`Target ${foundTarget}`}
                 width={300}
                 height={200}
@@ -241,8 +241,8 @@ const SceneEnvironmentCanvas = ({
               />
 
               <Image
-                src={backPlaneWordingStep2}
-                alt="backPlaneWordingStep2"
+                src={imgBackPlaneWordingStep2}
+                alt="imgBackPlaneWordingStep2"
                 width={200}
                 height={50}
               />
@@ -253,8 +253,8 @@ const SceneEnvironmentCanvas = ({
                 onClick={handleARButtonClick}
               >
                 <Image
-                  src={btnPlayAr}
-                  alt="btnPlayAr"
+                  src={imgBtnPlayAr}
+                  alt="imgBtnPlayAr"
                   width={200}
                   height={50}
                 />
