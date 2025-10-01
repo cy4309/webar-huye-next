@@ -727,7 +727,7 @@ const FaceLandmarkCanvas = () => {
             )}
           </div>
 
-          {!isSpinning && (
+          {!isSpinning && avatarView && (
             <button
               className="absolute bottom-36 left-1/2 -translate-x-1/2 z-[9999]"
               // onClick={() => {

@@ -64,7 +64,7 @@ export default function Nav({
           )}
 
           {/* 拍照（合成輸出） */}
-          {onShootPhoto && (
+          {onShootPhoto && avatarView && (
             <button
               onClick={onShootPhoto}
               aria-label="Shutter"
@@ -78,7 +78,7 @@ export default function Nav({
           )}
 
           {/* 錄影（合成輸出） */}
-          {onToggleRecord && (
+          {onToggleRecord && avatarView && (
             <button
               onClick={onToggleRecord}
               aria-label="Record"
