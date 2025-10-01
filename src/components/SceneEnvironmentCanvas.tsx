@@ -7,8 +7,16 @@ import { clone } from "three/examples/jsm/utils/SkeletonUtils";
 import { Group } from "three";
 import * as THREE from "three";
 import NavCameraFacing from "@/components/NavCameraFacing";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-// import "@google/model-viewer";
+import backPlane from "/public/assets/images/back_plane.png";
+import backPlaneATiger from "/public/assets/images/back_plane_a_tiger.png";
+import backPlaneBTiger from "/public/assets/images/back_plane_b_tiger.png";
+import backPlaneWordingStep1 from "/public/assets/images/back_plane_wording_step1.png";
+import backPlaneAMap from "/public/assets/images/back_plane_a_map.png";
+import backPlaneBMap from "/public/assets/images/back_plane_b_map.png";
+import backPlaneWordingStep2 from "/public/assets/images/back_plane_wording_step2.png";
+import btnPlayAr from "/public/assets/images/btn_play_ar.png";
 
 interface SceneEnvironmentCanvasProps {
   onToggleCameraFacing: () => void;
@@ -40,10 +48,11 @@ const SceneEnvironmentCanvas = ({
 }: SceneEnvironmentCanvasProps) => {
   const [foundTarget, setFoundTarget] = useState<number | null>(null); // 目前0, 1兩個targets
   const [isTigerA, setIsTigerA] = useState(true);
-  const [showNotice, setShowNotice] = useState(false);
-  const mvRef = useRef<any>(null);
+  // const [showNotice, setShowNotice] = useState(false);
+  // const mvRef = useRef<any>(null);
   const modelGroupRef = useRef<THREE.Group>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
 
   // 為防止記憶體洩漏或錯誤觸發
   useEffect(() => {
@@ -60,57 +69,62 @@ const SceneEnvironmentCanvas = ({
     return () => clearInterval(interval); // 清理定時器
   }, []);
 
-  const handleARButtonClick = async (
-    e: React.MouseEvent<HTMLButtonElement>,
-    mvRef: React.RefObject<any>
-  ) => {
-    e.stopPropagation();
-    const mv = mvRef.current;
-    if (!mv) return;
-
-    // if (mv.activateAR) {
-    //   try {
-    //     await mv.activateAR();
-    //     console.log("✅ AR viewer launched");
-    //   } catch (err) {
-    //     console.error("❌ Failed to activateAR", err);
-    //   }
-    // } else {
-    //   console.warn("❌ mv.activateAR 不存在，可能 model-viewer 未正確初始化");
-    // }
-
-    try {
-      // await mv.activateAR(); // 原生 AR viewer
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      if (isIOS) {
-        setShowNotice(true);
-        setTimeout(() => {
-          setShowNotice(false);
-          window.open("/models/0924.usdz", "_blank");
-        }, 4000);
-      } else {
-        const glb = encodeURIComponent(
-          new URL("/models/0924.glb", window.location.href).toString()
-        );
-        const fallback = encodeURIComponent(window.location.href);
-        window.location.href =
-          `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
-          `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
-          `S.browser_fallback_url=${fallback};end;`;
-      }
-    } catch (err) {
-      console.warn("activateAR failed:", err);
-    }
+  const handleARButtonClick = () => {
+    router.push("/ar");
+    // router.push("/ar?back=1");
   };
+
+  // const handleARButtonClick = async (
+  //   e: React.MouseEvent<HTMLButtonElement>,
+  //   mvRef: React.RefObject<any>
+  // ) => {
+  //   e.stopPropagation();
+  //   const mv = mvRef.current;
+  //   if (!mv) return;
+
+  //   if (mv.activateAR) {
+  //     try {
+  //       await mv.activateAR();
+  //       console.log("✅ AR viewer launched");
+  //     } catch (err) {
+  //       console.error("❌ Failed to activateAR", err);
+  //     }
+  //   } else {
+  //     console.warn("❌ mv.activateAR 不存在，可能 model-viewer 未正確初始化");
+  //   }
+
+  //   // try {
+  //   //   // await mv.activateAR(); // 原生 AR viewer
+  //   //   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  //   //   if (isIOS) {
+  //   //     setShowNotice(true);
+  //   //     setTimeout(() => {
+  //   //       setShowNotice(false);
+  //   //       window.open("/models/0930b.usdz", "_blank");
+  //   //     }, 4000);
+  //   //   } else {
+  //   //     const glb = encodeURIComponent(
+  //   //       new URL("/models/0930b.glb", window.location.href).toString()
+  //   //     );
+  //   //     const fallback = encodeURIComponent(window.location.href);
+  //   //     window.location.href =
+  //   //       `intent://arvr.google.com/scene-viewer/1.0?file=${glb}&mode=ar_preferred` +
+  //   //       `#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;` +
+  //   //       `S.browser_fallback_url=${fallback};end;`;
+  //   //   }
+  //   // } catch (err) {
+  //   //   console.warn("activateAR failed:", err);
+  //   // }
+  // };
 
   return (
     <>
       <div className="w-full h-full relative flex flex-col items-center">
-        {showNotice && (
+        {/* {showNotice && (
           <div className="fixed w-full top-0 left-0 text-center text-white bg-black px-4 py-2 rounded shadow-lg z-[9999] animate-fade-in-out">
             即將開啟模型預覽頁，關閉後請手動回來本頁
           </div>
-        )}
+        )} */}
 
         {/* AR背景始終顯示 */}
         <ARView
@@ -175,8 +189,8 @@ const SceneEnvironmentCanvas = ({
           <div className="w-[300px] p-8 z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
             {/* 背景圖（用 img 放在最底層，opacity 可控） */}
             <Image
-              src="/assets/images/back_plane.png"
-              alt="Back Plane"
+              src={backPlane}
+              alt="backPlane"
               fill
               sizes="(max-width: 768px) 100vw, 300px"
               className="opacity-50 object-contain pointer-events-none"
@@ -185,11 +199,7 @@ const SceneEnvironmentCanvas = ({
             {/* 前景內容包一層 relative，確保在上方 */}
             <div className="relative z-10 flex flex-col items-center">
               <Image
-                src={
-                  isTigerA
-                    ? "/assets/images/back_plane_a_tiger.png"
-                    : "/assets/images/back_plane_b_tiger.png"
-                }
+                src={isTigerA ? backPlaneATiger : backPlaneBTiger}
                 alt="huye_demo"
                 className="mt-6 object-contain"
                 // fill
@@ -198,8 +208,8 @@ const SceneEnvironmentCanvas = ({
               />
 
               <Image
-                src="/assets/images/back_plane_wording_step1.png"
-                alt="Step 1"
+                src={backPlaneWordingStep1}
+                alt="backPlaneWordingStep1"
                 width={260}
                 height={50}
                 className="my-4"
@@ -213,8 +223,8 @@ const SceneEnvironmentCanvas = ({
           <div className="w-[300px] p-12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center bg-no-repeat bg-contain bg-center">
             {/* 背景圖（用 img 放在最底層，opacity 可控） */}
             <Image
-              src="/assets/images/back_plane.png"
-              alt="Back Plane"
+              src={backPlane}
+              alt="backPlane"
               fill
               sizes="(max-width: 768px) 100vw, 300px"
               className="opacity-50 object-contain pointer-events-none"
@@ -223,11 +233,7 @@ const SceneEnvironmentCanvas = ({
             {/* 前景內容包一層 relative，確保在上方 */}
             <div className="relative z-10 flex flex-col items-center">
               <Image
-                src={
-                  foundTarget === 0
-                    ? "/assets/images/back_plane_a_map.png"
-                    : "/assets/images/back_plane_b_map.png"
-                }
+                src={foundTarget === 0 ? backPlaneAMap : backPlaneBMap}
                 alt={`Target ${foundTarget}`}
                 width={300}
                 height={200}
@@ -235,100 +241,24 @@ const SceneEnvironmentCanvas = ({
               />
 
               <Image
-                src="/assets/images/back_plane_wording_step2.png"
-                alt="Step 2"
+                src={backPlaneWordingStep2}
+                alt="backPlaneWordingStep2"
                 width={200}
                 height={50}
-                // className="mt-4"
-              />
-
-              <model-viewer
-                id="model-viewer"
-                ref={mvRef}
-                ios-src="/models/0924.usdz"
-                src="/models/0924.glb"
-                alt="3D model"
-                ar
-                ar-modes="scene-viewer quick-look"
-                camera-controls
-                auto-rotate
-                autoplay
-                // animation-loop
-                shadow-intensity="1"
-                style={{
-                  visibility: "hidden",
-                  width: 0,
-                  height: 0,
-                  position: "absolute",
-                }}
-                // style={{
-                //   width: "230px",
-                //   height: "100px",
-                //   maxWidth: "100%",
-                //   maxHeight: "100%",
-                // }}
               />
 
               <button
-                slot="ar-button"
                 className="mt-4"
-                onClick={(e) => handleARButtonClick(e, mvRef)}
+                // onClick={(e) => handleARButtonClick(e, mvRef)}
+                onClick={handleARButtonClick}
               >
                 <Image
-                  src="/assets/images/btn_play_ar.png"
-                  alt="Start AR"
+                  src={btnPlayAr}
+                  alt="btnPlayAr"
                   width={200}
                   height={50}
                 />
               </button>
-
-              {/* <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40">
-              <button
-                className="bg-white/80 backdrop-blur-sm text-blue-600 border-gray-400 border py-3 px-3 rounded-2xl shadow-xl"
-                onClick={(e) => handleARButtonClick(e, mvRef)}
-              >
-                🚀 啟動 AR 模式
-              </button>
-            </div> */}
-
-              {/* <div
-                className="mt-2 relative w-[230px] h-[230px]"
-                style={{
-                  transform: "translate(0px, 0px)",
-                }}
-              >
-                <Image
-                  src="/assets/images/btn_play_ar.png"
-                  alt="btn"
-                  width={230}
-                  height={230}
-                />
-                <a
-                  href="/models/0924.usdz"
-                  rel="ar"
-                  className="absolute inset-0 block"
-                >
-                  <Image
-                    alt="btn"
-                    width={230}
-                    height={230}
-                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAABCCAYAAABD56pDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABSSURBVHhe7cExAQAAAMKg9U9tDQ8gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOBWDe1yAAH1D+hYAAAAAElFTkSuQmCC"
-                  />
-                </a>
-              </div> */}
-
-              {/* <button
-                // slot="ar-button"
-                className="mt-4"
-                onClick={(e) => handleARButtonClick(e, mvRef)}
-              >
-                <Image
-                  src="/assets/images/btn_play_ar.png"
-                  alt="Start AR"
-                  width={200}
-                  height={50}
-                />
-              </button> */}
             </div>
           </div>
         )}
