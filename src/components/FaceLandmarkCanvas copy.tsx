@@ -147,17 +147,15 @@ const FaceLandmarkCanvas = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const setupCamera = async (mode: "user" | "environment", retry = 0) => {
     try {
-      // 先釋放舊相機
+      // 釋放舊相機
       streamRef.current?.getTracks().forEach((t) => t.stop());
-      streamRef.current = null;
-
       const constraints: MediaStreamConstraints = {
         video: { facingMode: { ideal: mode } },
         audio: false,
       };
       let stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-      // fallback: 有些 Android/桌機不吃 facingMode
+      // 一些桌機/Android 不吃 facingMode，fallback enumerateDevices
       const track = stream.getVideoTracks()[0];
       if (track.getSettings().facingMode !== mode) {
         try {
@@ -169,7 +167,6 @@ const FaceLandmarkCanvas = () => {
                 ? /back|rear|environment/i.test(d.label)
                 : /front|user|face/i.test(d.label)
             ) || videos[0];
-
           if (pick) {
             stream.getTracks().forEach((t) => t.stop());
             stream = await navigator.mediaDevices.getUserMedia({
@@ -178,37 +175,27 @@ const FaceLandmarkCanvas = () => {
             });
           }
         } catch (e) {
-          console.error("enumerateDevices error:", e);
+          console.log(e);
           alert("Failed to enumerate devices or switch camera.");
         }
       }
 
       streamRef.current = stream;
-
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-
-        videoRef.current.onloadedmetadata = () => {
-          updateVideoSize(); // ✅ 在 metadata ready 時更新一次尺寸
-          setIsCameraReady(true);
-          videoRef.current!.play().catch(() => {
-            console.warn("自動播放失敗，等待使用者互動");
-          });
-        };
-
+        // await videoRef.current.play();
         try {
           await videoRef.current.play();
         } catch (e) {
           console.warn("自動播放失敗，等待使用者互動");
         }
       }
-
       setMirrored(mode === "user");
       setIsCameraReady(true);
     } catch (e) {
-      console.error("setupCamera error:", e);
+      console.log(e);
       if (retry < 2) {
-        setTimeout(() => setupCamera(mode, retry + 1), 500);
+        setTimeout(() => setupCamera(mode, retry + 1), 500); // 自動重試
       } else {
         alert("Failed to setup camera.");
       }
@@ -218,47 +205,35 @@ const FaceLandmarkCanvas = () => {
   // 初次與切換時呼叫
   useEffect(() => {
     setupCamera(facing);
-    return () => {
-      streamRef.current?.getTracks().forEach((t) => t.stop());
-      streamRef.current = null;
-    };
+    return () => streamRef.current?.getTracks().forEach((t) => t.stop());
   }, [facing]);
 
-  // ✅ 保留 resize，移除重複 getUserCamera
   useEffect(() => {
+    const getUserCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.onloadedmetadata = () => {
+            updateVideoSize();
+            setIsCameraReady(true);
+            videoRef.current!.play();
+          };
+        }
+      } catch (e) {
+        console.log(e);
+        alert("Failed to load webcam!");
+      }
+    };
+    getUserCamera();
     window.addEventListener("resize", updateVideoSize);
     return () => {
       cancelAnimationFrame(requestRef.current);
       window.removeEventListener("resize", updateVideoSize);
     };
   }, []);
-
-  // useEffect(() => {
-  //   const getUserCamera = async () => {
-  //     try {
-  //       const stream = await navigator.mediaDevices.getUserMedia({
-  //         video: true,
-  //       });
-  //       if (videoRef.current) {
-  //         videoRef.current.srcObject = stream;
-  //         videoRef.current.onloadedmetadata = () => {
-  //           updateVideoSize();
-  //           setIsCameraReady(true);
-  //           videoRef.current!.play();
-  //         };
-  //       }
-  //     } catch (e) {
-  //       console.log(e);
-  //       alert("Failed to load webcam!");
-  //     }
-  //   };
-  //   getUserCamera();
-  //   window.addEventListener("resize", updateVideoSize);
-  //   return () => {
-  //     cancelAnimationFrame(requestRef.current);
-  //     window.removeEventListener("resize", updateVideoSize);
-  //   };
-  // }, []);
 
   // 初始化 Mediapipe 模型（camera ready 後）
   useEffect(() => {
