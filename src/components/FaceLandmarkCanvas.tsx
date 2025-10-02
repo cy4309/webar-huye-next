@@ -388,13 +388,13 @@ const FaceLandmarkCanvas = () => {
   const handleShootPhoto = async () => {
     try {
       const v = videoRef.current;
-      if (!v) return;
+      if (!v) return alert("請重新整理頁面來載入相機");
 
       const r3f = ensureR3FCanvas();
       const overlay = ensureOverlayCanvas();
       const frameCanvas = frameCanvasRef.current;
       if (!r3f || r3f.width === 0 || r3f.height === 0)
-        return alert("找不到 3D 畫布");
+        return alert("請重新整理頁面來載入AR內容");
 
       if (r3f) {
         const r = r3f.getBoundingClientRect(); // 取 style 寬高
@@ -455,12 +455,12 @@ const FaceLandmarkCanvas = () => {
   const startCompositeRecording = async () => {
     try {
       const v = videoRef.current;
-      if (!v) return alert("找不到相機");
+      if (!v) return alert("請重新整理頁面來載入相機");
 
       const r3f = ensureR3FCanvas();
       const overlay = ensureOverlayCanvas();
       const frameCanvas = frameCanvasRef.current;
-      if (!r3f) return alert("找不到 3D 畫布");
+      if (!r3f) return alert("請重新整理頁面來載入AR內容");
 
       const r = r3f.getBoundingClientRect();
       const W = r.width;
