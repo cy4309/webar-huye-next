@@ -303,8 +303,8 @@ const FaceLandmarkCanvas = () => {
 
   const updateVideoSize = () => {
     if (videoRef.current) {
-      const width = videoRef.current.offsetWidth;
-      const height = videoRef.current.offsetHeight;
+      const width = videoRef.current!.offsetWidth;
+      const height = videoRef.current!.offsetHeight;
       setVideoSize({ width, height });
 
       // ✅ 這裡畫上 frame canvas 的內容
@@ -740,8 +740,10 @@ const FaceLandmarkCanvas = () => {
                   />
                 ) : (
                   <DrawLandmarkCanvas
-                    width={videoSize.width}
-                    height={videoSize.height}
+                    // width={videoSize.width}
+                    // height={videoSize.height}
+                    videoWidth={videoRef.current!.videoWidth}
+                    videoHeight={videoRef.current!.videoHeight}
                     // @ts-ignore 同上，先讓它可回傳 canvas；若未實作會走 DOM fallback
                     onCanvasReady={(el: HTMLCanvasElement) => {
                       el.id = "landmark-overlay"; // 也放個 id，fallback 會找得到
