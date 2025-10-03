@@ -44,6 +44,9 @@ const FaceLandmarkCanvas = () => {
   const [avatarView, setAvatarView] = useState(true);
   const [showAvatarCreator, setShowAvatarCreator] = useState(false);
   const [modelUrl, setModelUrl] = useState("/models/tiger-hat2.glb");
+  const [avatarCreationUrl, setAvatarCreationUrl] = useState(
+    "https://models.readyplayer.me/6460691aa35b2e5b7106734d.glb?morphTargets=ARKit"
+  );
   const [videoSize, setVideoSize] = useState<{
     width: number;
     height: number;
@@ -297,7 +300,7 @@ const FaceLandmarkCanvas = () => {
   const handleToggleAvatarView = () => setAvatarView((prev) => !prev);
   const toggleAvatarCreatorView = () => setShowAvatarCreator((prev) => !prev);
   const handleAvatarCreationComplete = (url: string) => {
-    setModelUrl(url);
+    setAvatarCreationUrl(url);
     toggleAvatarCreatorView();
   };
 
@@ -733,6 +736,7 @@ const FaceLandmarkCanvas = () => {
                     height={videoSize.height}
                     // url={modelUrl}
                     url="/models/tiger-hat2.glb"
+                    // avatarCreationUrl={avatarCreationUrl}
                     // @ts-ignore 若你的 AvatarCanvas 還沒加這個 prop，不影響執行；會走 DOM fallback
                     onCanvasReady={(el: HTMLCanvasElement) =>
                       (r3fCanvasRef.current = el)

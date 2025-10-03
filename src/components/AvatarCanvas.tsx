@@ -7,8 +7,6 @@ import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
 import { OrbitControls, Float, Text3D } from "@react-three/drei";
 import * as THREE from "three";
 import { getStickerFilenames } from "@/utils/getStickerFilenames";
-// import FaceMeshMask from "@/components/FaceMeshMask";
-// import OccluderCylinder from "@/components/OccluderCylinder";
 
 interface AvatarCanvasProps {
   width: number;
@@ -113,8 +111,6 @@ const AvatarCanvas = ({
           // enableZoom={true}
         />
         {/* {videoRef.current && <VideoPlane video={videoRef.current} mirrored={mirrored} />} */}
-        {/* <FaceMeshMask /> */}
-        {/* <OccluderCylinder /> */}
 
         {scene && <primitive object={scene} />}
         {isLoading && (

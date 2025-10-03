@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import imgBtnHome from "/public/assets/images/btn_home.png";
@@ -9,6 +9,7 @@ import imgBackPlane from "/public/assets/images/back_plane.png";
 import imgBackPlaneWordingStep3 from "/public/assets/images/back_plane_wording_step3.png";
 
 export default function ARPage() {
+  const [isLaunching, setIsLaunching] = useState(true);
   const mvRef = useRef<any>(null);
   const router = useRouter();
 
@@ -20,6 +21,8 @@ export default function ARPage() {
       } catch (error) {
         console.error("❌ 無法啟動 AR 模式，導回上一頁", error);
         router.back();
+      } finally {
+        setIsLaunching(false); // 不管成功失敗都關閉 loading
       }
     };
 
@@ -28,9 +31,18 @@ export default function ARPage() {
 
   return (
     <div className="p-6 relative w-full h-[100dvh] flex flex-col items-center justify-center bg-[#f2e18d] text-white">
+      {isLaunching && (
+        <div className="absolute inset-0 z-[99999] bg-black bg-opacity-60 flex flex-col items-center justify-center">
+          <p className="text-white text-sm mb-2">啟動 AR 模式中...</p>
+          <div className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full" />
+        </div>
+      )}
+
       <button
         className="absolute top-8 right-8 z-[9999]"
-        onClick={() => router.back()}
+        onClick={() => {
+          if (!isLaunching) router.back(); // 不允許 loading 中點擊
+        }}
       >
         <Image src={imgBtnHome} alt="imgBtnHome" width={56} height={56} />
       </button>
