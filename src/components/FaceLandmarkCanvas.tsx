@@ -6,7 +6,6 @@ import { useEffect, useRef, useState, useMemo, createRef } from "react";
 import DrawLandmarkCanvas from "@/components/DrawLandmarkCanvas";
 import AvatarCanvas from "@/components/AvatarCanvas";
 import FaceLandmarkManager from "@/classes/FaceLandmarkManager";
-import ReadyPlayerCreator from "@/components/ReadyPlayerCreator";
 import AvatarManager from "@/classes/AvatarManager";
 import SceneEnvironmentCanvas from "@/components/SceneEnvironmentCanvas";
 import Nav from "@/components/Nav";
@@ -40,13 +39,8 @@ const FaceLandmarkCanvas = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastVideoTimeRef = useRef(-1);
   const requestRef = useRef(0);
-
   const [avatarView, setAvatarView] = useState(true);
-  const [showAvatarCreator, setShowAvatarCreator] = useState(false);
-  const [modelUrl, setModelUrl] = useState("/models/tiger-hat2.glb");
-  const [avatarCreationUrl, setAvatarCreationUrl] = useState(
-    "https://models.readyplayer.me/6460691aa35b2e5b7106734d.glb?morphTargets=ARKit"
-  );
+  // const [modelUrl, setModelUrl] = useState("/models/tiger-hat2.glb");
   const [videoSize, setVideoSize] = useState<{
     width: number;
     height: number;
@@ -298,11 +292,6 @@ const FaceLandmarkCanvas = () => {
   // }, []);
 
   const handleToggleAvatarView = () => setAvatarView((prev) => !prev);
-  const toggleAvatarCreatorView = () => setShowAvatarCreator((prev) => !prev);
-  const handleAvatarCreationComplete = (url: string) => {
-    setAvatarCreationUrl(url);
-    toggleAvatarCreatorView();
-  };
 
   const updateVideoSize = () => {
     if (videoRef.current) {
@@ -720,15 +709,8 @@ const FaceLandmarkCanvas = () => {
               </div>
             )}
 
-            {videoSize && isRenderReady && modelUrl && (
+            {videoSize && isRenderReady && (
               <>
-                {showAvatarCreator && (
-                  <ReadyPlayerCreator
-                    width={videoSize.width}
-                    height={videoSize.height}
-                    handleComplete={handleAvatarCreationComplete}
-                  />
-                )}
                 {/* Avatar 視圖：建議在 AvatarCanvas 裡加 onCanvasReady={(el)=> r3fCanvasRef.current=el} */}
                 {avatarView ? (
                   <AvatarCanvas
