@@ -674,7 +674,8 @@ const FaceLandmarkCanvas = () => {
                 </p>
                 <p className="px-6 text-sm text-black flex flex-col w-full">
                   <span className="my-2">
-                    1. 請勿使用LINE或其他社群軟體的相機掃描QR code。
+                    1. 請用手機的相機掃描QR code,
+                    不要使用LINE或其他社群軟體掃描、避免體驗視窗被阻擋。
                   </span>
                   <span className="my-2 flex flex-col">
                     2. 建議使用以下瀏覽器開啟濾鏡網頁，以取得最佳體驗效果。
