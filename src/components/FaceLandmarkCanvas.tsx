@@ -51,6 +51,7 @@ const FaceLandmarkCanvas = () => {
   const [mirrored, setMirrored] = useState(true);
   const [cameraMode, setCameraMode] = useState<"user" | "environment">("user");
   const [isSpinning, setIsSpinning] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   // const [facing, setFacing] = useState<"user" | "environment">("environment");
   // const [mirrored, setMirrored] = useState(false);
   // const [cameraMode, setCameraMode] = useState<"user" | "environment">(
@@ -281,6 +282,14 @@ const FaceLandmarkCanvas = () => {
       });
     }
   }, [isCameraReady]);
+
+  useEffect(() => {
+    if (cameraMode === "user") {
+      setShowHint(true);
+      const timer = setTimeout(() => setShowHint(false), 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [cameraMode]);
 
   // useEffect(() => {
   //   const handleResize = () => {
@@ -657,6 +666,40 @@ const FaceLandmarkCanvas = () => {
     <>
       {cameraMode === "user" ? (
         <div className="w-full h-full relative flex flex-col items-center">
+          {showHint && (
+            <div className="absolute inset-0 z-[99999] bg-black/60 flex flex-col justify-center items-center text-white">
+              <div className="p-4 w-2/3 max-w-[360px] bg-[#f2e18d] flex flex-col justify-center items-center rounded-xl">
+                <p className="m-4 text-lg font-semibold text-black">
+                  貼心小叮嚀
+                </p>
+                <p className="px-6 text-sm text-black flex flex-col w-full">
+                  <span className="my-2 flex flex-col">
+                    1. 建議使用以下瀏覽器開啟濾鏡網頁，以取得最佳體驗效果。
+                    <span>* Android 請使用Chrome</span>
+                    <span>* IPhone 請使用Safari</span>
+                  </span>
+                  <span className="my-2">
+                    2. 建議手機作業系統和瀏覽器版本： * iOS 15.0、Android
+                    9.0、Google Chrome 76 或更高版本。
+                  </span>
+                  <span className="my-2">
+                    3.
+                    因手機型號版本不同，體驗效果可能有所差異。較舊之手機型號有可能不支援濾鏡遊戲。
+                  </span>
+                </p>
+                <button
+                  className="m-4 p-2 px-6 w-full border border-black bg-[#f2e18d] text-black font-bold rounded-xl"
+                  onClick={() => setShowHint(false)}
+                >
+                  我知道了
+                </button>
+                <p className="text-sm text-black opacity-70">
+                  提示將於 8 秒後自動關閉
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* ✅ 邊框 PNG，會蓋在最上層，直式手機比例9:16(720*1280)，橫式電腦螢幕比例16:9(1920*1080) */}
           {/* <Image
             src={
