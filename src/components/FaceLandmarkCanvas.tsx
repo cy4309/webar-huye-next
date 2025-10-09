@@ -673,17 +673,20 @@ const FaceLandmarkCanvas = () => {
                   貼心小叮嚀
                 </p>
                 <p className="px-6 text-sm text-black flex flex-col w-full">
+                  <span className="my-2">
+                    1. 請勿使用LINE或其他社群軟體的相機掃描QR code。
+                  </span>
                   <span className="my-2 flex flex-col">
-                    1. 建議使用以下瀏覽器開啟濾鏡網頁，以取得最佳體驗效果。
+                    2. 建議使用以下瀏覽器開啟濾鏡網頁，以取得最佳體驗效果。
                     <span>* Android 請使用Chrome</span>
                     <span>* IPhone 請使用Safari</span>
                   </span>
                   <span className="my-2">
-                    2. 建議手機作業系統和瀏覽器版本： * iOS 15.0、Android
+                    3. 建議手機作業系統和瀏覽器版本： * iOS 15.0、Android
                     9.0、Google Chrome 76 或更高版本。
                   </span>
                   <span className="my-2">
-                    3.
+                    4.
                     因手機型號版本不同，體驗效果可能有所差異。較舊之手機型號有可能不支援濾鏡遊戲。
                   </span>
                 </p>
